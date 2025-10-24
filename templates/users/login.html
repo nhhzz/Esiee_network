@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+{% block content %}
+<div class="container" style="max-width:520px;">
+  <div class="card shadow-sm mt-5">
+    <div class="card-body p-4">
+      <h3 class="mb-3">Connexion</h3>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+          <label class="form-label">Nom d’utilisateur</label>
+          {{ form.username|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Mot de passe</label>
+          {{ form.password|add_class:"form-control" }}
+        </div>
+        <button class="btn btn-primary w-100">Se connecter</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

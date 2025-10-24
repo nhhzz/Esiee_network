@@ -1,0 +1,13 @@
+:root{
+  --esiee-blue:#0055A4;
+  --esiee-blue-dark:#003d7a;
+  --esiee-light:#f8f9fb;
+  --esiee-gray:#6c757d;
+}
+body{background:var(--esiee-light);}
+.navbar{background:var(--esiee-blue)!important;}
+.btn-primary{background:var(--esiee-blue);border-color:var(--esiee-blue);}
+.btn-primary:hover{background:var(--esiee-blue-dark);border-color:var(--esiee-blue-dark);}
+a{color:var(--esiee-blue);}
+#map{height:520px;}
+.card{border-radius:12px;}
