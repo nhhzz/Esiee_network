@@ -11,6 +11,10 @@ class Post(models.Model):
         ('lost', ' Objet perdu/trouvé'),
         ('other', ' Autre'),
     ]
+    @property
+    def top_comments(self):
+        """Commentaires de premier niveau uniquement"""
+        return self.comments.filter(parent__isnull=True).order_by('-created_at')
 
 
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -41,9 +45,10 @@ class Like(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name="replies", on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Commentaire de {self.user.username} sur {self.post.title}"
+    def is_reply(self):
+        return self.parent is not None
