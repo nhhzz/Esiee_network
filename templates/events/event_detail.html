@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-4" style="max-width: 900px;">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="mb-1">{{ event.title }}</h1>
+
+      <div class="text-muted">
+        <div>
+          🕒 {{ event.start_at|date:"d/m/Y H:i" }}
+          {% if event.end_at %} → {{ event.end_at|date:"d/m/Y H:i" }}{% endif %}
+        </div>
+        {% if event.location %}<div>📍 {{ event.location }}</div>{% endif %}
+        <div>👤 Créé par {{ event.created_by.username }}</div>
+      </div>
+    </div>
+
+    <!-- ✅ Colonne de droite : Retour + (Modifier/Supprimer si propriétaire) -->
+    <div class="d-flex flex-column align-items-end gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'events:list' %}">Retour</a>
+
+      {% if request.user == event.created_by %}
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-primary" href="{% url 'events:update' event.pk %}">Modifier</a>
+          <a class="btn btn-outline-danger" href="{% url 'events:delete' event.pk %}">Supprimer</a>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  {% if event.description %}
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Description</h5>
+        <p class="card-text">{{ event.description|linebreaksbr }}</p>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">Aucune description.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
+

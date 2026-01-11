@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-4" style="max-width: 800px;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Créer un événement</h1>
+    <a class="btn btn-outline-secondary" href="{% url 'events:list' %}">Retour</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Titre</label>
+          {{ form.title }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          {{ form.description }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Lieu</label>
+          {{ form.location }}
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Début</label>
+            {{ form.start_at }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Fin (optionnel)</label>
+            {{ form.end_at }}
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Créer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
