@@ -80,6 +80,22 @@
         font-size: 12px;
         font-weight: 600;
     }
+
+    .creator-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        font-size: 13px;
+        color: #555;
+    }
+
+    .creator-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
 </style>
 
 <header>
@@ -128,6 +144,15 @@
 
                 <div class="event-location">
                     📍 {{ event.get_location_display }}
+                </div>
+
+                <div class="creator-row">
+                    {% if event.created_by.profile_image %}
+                        <img src="{{ event.created_by.profile_image.url }}"
+                             alt="Photo de profil"
+                             class="creator-avatar">
+                    {% endif %}
+                    <span>Créé par {{ event.created_by.username }}</span>
                 </div>
             </div>
         {% endfor %}

@@ -24,12 +24,24 @@ class ProfileForm(forms.ModelForm):
     username = forms.CharField(
         label="Changer votre nom d'utilisateur",
         max_length=150,
-        widget=forms.TextInput(attrs={
-            "class": "form-control",
-            "placeholder": "Entrez votre nouveau nom d'utilisateur"
-        }),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Entrez votre nouveau nom d'utilisateur",
+            }
+        ),
+    )
+
+    profile_image = forms.ImageField(
+        label="Ajouter / Modifier votre photo de profil",
+        required=False,
+        widget=forms.FileInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
     )
 
     class Meta:
         model = User
-        fields = ["username"]
+        fields = ["username", "profile_image"]

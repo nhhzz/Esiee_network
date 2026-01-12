@@ -39,3 +39,17 @@ a{color:var(--esiee-blue);}
 .map-dot:hover{
   outline: 2px solid rgba(0, 0, 0, 0.25);
 }
+
+.avatar-sm{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.avatar-md{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  object-fit:cover;
+}

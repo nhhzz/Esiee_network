@@ -48,16 +48,19 @@ def user_logout(request):
 @login_required
 def profile(request):
     if request.method == "POST":
-        form = ProfileForm(request.POST, instance=request.user)
+        form = ProfileForm(
+            request.POST,
+            request.FILES,
+            instance=request.user,
+        )
         if form.is_valid():
             form.save()
             messages.success(request, "Profil mis à jour avec succès.")
-            return redirect("users:my_profile")  # ou "users:profile" si tu préfères rester sur la page
+            return redirect("users:my_profile")
     else:
         form = ProfileForm(instance=request.user)
 
     return render(request, "users/profile.html", {"form": form})
-
 @login_required
 def my_profile(request):
     user = request.user
