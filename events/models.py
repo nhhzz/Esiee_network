@@ -19,6 +19,7 @@ LOCATION_CHOICES = [
     ("PORTE_NORD", "Porte Nord"),
     ("ROND_POINT", "Rond-Point"),
     ("PORTE_PRINCIPALE", "Porte principale"),
+    ("EXPOSES", "Exposés"),
 ]
 
 

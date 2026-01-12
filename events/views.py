@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .forms import EventForm
-from .models import Event
+from .models import Event, LOCATION_CHOICES
 
 """""
 @login_required
@@ -27,8 +27,23 @@ def events_list(request):
 """
 @login_required
 def events_list(request):
-    events = Event.objects.all().order_by("-start_at")
-    return render(request, "events/events_list.html", {"events": events})
+    location_code = request.GET.get("location")
+
+    events = Event.objects.all().order_by("start_at", "title")
+
+    filtered_location_label = None
+    if location_code:
+        events = events.filter(location=location_code)
+        # On récupère le label lisible à partir des choices
+        choices_dict = dict(LOCATION_CHOICES)
+        filtered_location_label = choices_dict.get(location_code)
+
+    context = {
+        "events": events,
+        "filtered_location": filtered_location_label,
+        "raw_location": location_code,
+    }
+    return render(request, "events/events_list.html", context)
 
 @login_required
 def event_detail(request, pk):
