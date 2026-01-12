@@ -1,11 +1,13 @@
 from django.urls import path
 from . import views
 
-app_name='users'
+app_name = 'users'
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.user_login, name='login'),
     path('signup/', views.signup, name='signup'),
     path('logout/', views.user_logout, name='logout'),
-    path('profile/', views.profile, name='profile'),
+    path('profile/', views.profile, name='profile'),          # Modifier le profil
+    path('mon-profil/', views.my_profile, name='my_profile'), # Mon profil (liste posts + events)
 ]

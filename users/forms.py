@@ -21,16 +21,15 @@ class LoginForm(AuthenticationForm):
     username = forms.CharField(label="Nom d'utilisateur")
 
 class ProfileForm(forms.ModelForm):
+    username = forms.CharField(
+        label="Changer votre nom d'utilisateur",
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Entrez votre nouveau nom d'utilisateur"
+        }),
+    )
+
     class Meta:
         model = User
-        fields = ('username','email')
-    def clean_email(self):
-        email = self.cleaned_data['email'].strip().lower()
-        if not email.endswith(ESIEE_DOMAIN):
-            raise forms.ValidationError("L'email doit se terminer par @edu.esiee.fr")
-        qs = User.objects.filter(email__iexact=email)
-        if self.instance.pk:
-            qs = qs.exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise forms.ValidationError("Cette adresse est déjà utilisée.")
-        return email
+        fields = ["username"]

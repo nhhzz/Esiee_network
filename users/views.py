@@ -3,6 +3,9 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import SignupForm, LoginForm, ProfileForm
+from posts.models import Post
+from events.models import Event
+
 
 def home(request):
     return render(request, 'users/home.html')
@@ -44,14 +47,30 @@ def user_logout(request):
 
 @login_required
 def profile(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Profil mis à jour.")
-            return redirect('users:profile')
-        else:
-            messages.error(request, "Veuillez corriger les erreurs.")
+            messages.success(request, "Profil mis à jour avec succès.")
+            return redirect("users:my_profile")  # ou "users:profile" si tu préfères rester sur la page
     else:
         form = ProfileForm(instance=request.user)
-    return render(request, 'users/profile.html', {'form': form})
+
+    return render(request, "users/profile.html", {"form": form})
+
+@login_required
+def my_profile(request):
+    user = request.user
+
+    # Tous les posts créés par l'utilisateur
+    posts = Post.objects.filter(author=user).order_by('-created_at')
+
+    # Tous les événements créés par l'utilisateur
+    events = Event.objects.filter(created_by=user).order_by('-start_at')
+
+    context = {
+        "user_obj": user,
+        "posts": posts,
+        "events": events,
+    }
+    return render(request, "users/my_profile.html", context)
