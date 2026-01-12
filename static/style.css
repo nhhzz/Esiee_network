@@ -11,3 +11,31 @@ body{background:var(--esiee-light);}
 a{color:var(--esiee-blue);}
 #map{height:520px;}
 .card{border-radius:12px;}
+
+/* === ESIEE plan map === */
+.map-container{
+  position: relative;
+  max-width: 900px;      /* adapt if you want it larger */
+}
+
+.map-container img{
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Invisible clickable circles on top of red dots */
+.map-dot{
+  position: absolute;
+  width: 28px;           /* clickable zone size */
+  height: 28px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0); /* fully transparent but clickable */
+  cursor: pointer;
+}
+
+/* Optional visual feedback on hover */
+.map-dot:hover{
+  outline: 2px solid rgba(0, 0, 0, 0.25);
+}

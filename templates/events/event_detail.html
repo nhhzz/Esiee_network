@@ -11,12 +11,21 @@
           🕒 {{ event.start_at|date:"d/m/Y H:i" }}
           {% if event.end_at %} → {{ event.end_at|date:"d/m/Y H:i" }}{% endif %}
         </div>
-        {% if event.location %}<div>📍 {{ event.location }}</div>{% endif %}
-        <div>👤 Créé par {{ event.created_by.username }}</div>
+
+        <!-- 📍 Lieu lisible -->
+        {% if event.location %}
+          <div>
+            📍 {{ event.get_location_display }}
+          </div>
+        {% endif %}
+
+        <div>
+          👤 Créé par {{ event.created_by.username }}
+        </div>
       </div>
     </div>
 
-    <!-- ✅ Colonne de droite : Retour + (Modifier/Supprimer si propriétaire) -->
+    <!-- Colonne actions -->
     <div class="d-flex flex-column align-items-end gap-2">
       <a class="btn btn-outline-secondary" href="{% url 'events:list' %}">Retour</a>
 
@@ -43,4 +52,3 @@
 </div>
 
 {% endblock %}
-

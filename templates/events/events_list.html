@@ -1,66 +1,70 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <meta charset="UTF-8">
-    <title>Liste des événements</title>
+<meta charset="UTF-8">
+<title>Liste des événements</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f8;
+        margin: 0;
+        padding: 0;
+    }
 
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    header {
+        background-color: #2c3e50;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
 
-        main {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 6px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
+    main {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-        h1 {
-            margin-top: 0;
-        }
+    h1 {
+        margin-top: 0;
+    }
 
-        .event {
-            border-bottom: 1px solid #ddd;
-            padding: 15px 0;
-        }
+    .event {
+        border-bottom: 1px solid #ddd;
+        padding: 15px 0;
+    }
 
-        .event:last-child {
-            border-bottom: none;
-        }
+    .event:last-child {
+        border-bottom: none;
+    }
 
-        .event-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #34495e;
-        }
+    .event-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #34495e;
+    }
 
-        .event-date {
-            color: #777;
-            font-size: 14px;
-        }
+    .event-date {
+        color: #777;
+        font-size: 14px;
+    }
 
-        .empty {
-            text-align: center;
-            color: #999;
-            font-style: italic;
-        }
-    </style>
-</head>
+    .event-location {
+        color: #2c3e50;
+        font-size: 14px;
+        margin-top: 4px;
+        font-weight: bold;
+    }
 
-<body>
+    .empty {
+        text-align: center;
+        color: #999;
+        font-style: italic;
+    }
+</style>
 
 <header>
     <h1>📅 Événements</h1>
@@ -69,7 +73,7 @@
 
 <main>
 
-    <!-- ✅ Bouton (une seule fois) -->
+    <!-- Bouton création -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h2 style="margin:0; color:#34495e;">Liste</h2>
 
@@ -83,13 +87,21 @@
         {% for event in events %}
             <div class="event">
                 <div class="event-title">
-                    <a href="{% url 'events:detail' event.pk %}" style="text-decoration:none; color:inherit;">
+                    <a href="{% url 'events:detail' event.pk %}"
+                       style="text-decoration:none; color:inherit;">
                         {{ event.title }}
                     </a>
                 </div>
+
                 <div class="event-date">
-                    {{ event.start_at|date:"d/m/Y H:i" }}
+                    🕒 {{ event.start_at|date:"d/m/Y H:i" }}
                 </div>
+
+                <!-- 🟦 Affichage du lieu lisible -->
+                <div class="event-location">
+                    📍 {{ event.get_location_display }}
+                </div>
+
             </div>
         {% endfor %}
     {% else %}
@@ -98,6 +110,4 @@
 
 </main>
 
-
 {% endblock %}
-

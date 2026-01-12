@@ -3,10 +3,35 @@ from django.db import models
 from django.utils import timezone
 
 
+# Lieux possibles (points de la carte)
+LOCATION_CHOICES = [
+    ("DEJEUNERS", "Déjeuners"),
+    ("RESTAURANT", "Restaurant"),
+    ("CAFETERIA", "Cafétéria"),
+    ("GYMNASE", "Gymnase"),
+    ("AMPHI_DASSAULT", "Amphithéâtre M. Dassault"),
+    ("EPI5", "Epi 5"),
+    ("AMPHI", "Amphi"),
+    ("ACCUEIL", "Accueil"),
+    ("EPI2", "Epi 2"),
+    ("BIBLIOTHEQUE", "Bibliothèque"),
+    ("POSTE_NORD", "Poste Nord"),
+    ("PORTE_NORD", "Porte Nord"),
+    ("ROND_POINT", "Rond-Point"),
+    ("PORTE_PRINCIPALE", "Porte principale"),
+]
+
+
 class Event(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    location = models.CharField(max_length=255, blank=True)
+
+    # Champ lieu -> dropdown avec les choix ci-dessus
+    location = models.CharField(
+        "Lieu",
+        max_length=50,
+        choices=LOCATION_CHOICES,
+    )
 
     start_at = models.DateTimeField()
     end_at = models.DateTimeField(null=True, blank=True)

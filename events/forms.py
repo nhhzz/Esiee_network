@@ -10,7 +10,7 @@ class EventForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-control"}),
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
-            "location": forms.TextInput(attrs={"class": "form-control"}),
+            "location": forms.Select(attrs={"class": "form-select"}),
             # Si tu utilises MDB/Bootstrap : datetime-local est pratique
             "start_at": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
             "end_at": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),

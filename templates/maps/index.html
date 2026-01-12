@@ -1,17 +1,49 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 <div class="container py-4">
-  <h3 class="mb-3">Carte ESIEE (démo)</h3>
-  <div id="map" class="rounded shadow-sm bg-white"></div>
+  <h3 class="mb-3">Carte ESIEE</h3>
+
+  <div class="map-container mx-auto">
+
+    <img src="{% static 'img/esiee_plan.jpg' %}"
+         alt="Plan ESIEE"
+         class="img-fluid map-image">
+
+    {% if user.is_authenticated %}
+        {% url 'events:list' as dot_url %}
+    {% else %}
+        {% url 'login' as dot_url %}
+    {% endif %}
+
+    {# ========= ALL RED DOTS (approximate positions) ========= #}
+
+    <!-- Left side (Restaurant / Déjeuners / Gymnase) -->
+    <a href="{{ dot_url }}" class="map-dot" style="top: 43%; left: 8%;" title="Déjeuners"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 34%; left: 10%;" title="Restaurant"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 27%; left: 12%;" title="Cafétéria"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 12%; left: 11%;" title="Gymnase"></a>
+
+    <!-- Amphithéâtre, Epi 5 area -->
+    <a href="{{ dot_url }}" class="map-dot" style="top: 34%; left: 25%;" title="Amphi M. Dassault"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 25%; left: 34%;" title="Epi 5"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 40%; left: 37%;" title="Exposés"></a>
+
+    <!-- Center area: Amphi + Accueil -->
+    <a href="{{ dot_url }}" class="map-dot" style="top: 32%; left: 45%;" title="Amphi"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 22%; left: 50%;" title="Accueil"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 41%; left: 50%;" title="Porte principale"></a>
+
+    <!-- Right area: Epi 2 + Bibliothèque -->
+    <a href="{{ dot_url }}" class="map-dot" style="top: 31%; left: 60%;" title="Epi 2"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 39%; left: 68%;" title="Bibliothèque"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 47%; left: 73%;" title="Poste Nord"></a>
+
+    <!-- Far right external doors -->
+    <a href="{{ dot_url }}" class="map-dot" style="top: 30%; left: 82%;" title="Porte Nord (droite)"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 22%; left: 88%;" title="Porte Nord (haut)"></a>
+    <a href="{{ dot_url }}" class="map-dot" style="top: 40%; left: 90%;" title="Rond-Point"></a>
+  </div>
 </div>
-<script>
-  const map = L.map('map').setView([48.860, 2.351], 16);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19}).addTo(map);
-  const points = [
-    {name: "Demande d'aide - C103", coords: [48.8604, 2.3504], type: "help"},
-    {name: "Soirée BDE", coords: [48.8609, 2.3520], type: "event"},
-    {name: "Bureau Prof X", coords: [48.8599, 2.3508], type: "prof"},
-  ];
-  points.forEach(p => L.marker(p.coords).addTo(map).bindPopup(`<b>${p.name}</b><br>Type: ${p.type}`));
-</script>
 {% endblock %}
