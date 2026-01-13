@@ -35,8 +35,69 @@
       <a href="{% url 'users:profile' %}" class="btn btn-outline-primary btn-sm">
         Modifier le profil
       </a>
+    {% else %}
+      <button class="btn btn-outline-primary btn-sm"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#dm-panel"
+              aria-expanded="false"
+              aria-controls="dm-panel">
+        Envoyer un message
+      </button>
     {% endif %}
   </div>
+
+  {% if not is_self %}
+    <!-- Panneau messagerie -->
+    <div class="collapse mb-4" id="dm-panel">
+      <div class="card">
+        <div class="card-body" style="max-height: 320px; overflow-y: auto;">
+          <h5 class="card-title mb-3">Conversation avec {{ user_obj.username }}</h5>
+
+          <div class="mb-3">
+            {% if dm_messages %}
+              {% for msg in dm_messages %}
+                <div class="mb-2 d-flex {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                  <div>
+                    <div class="small text-muted mb-1">
+                      {% if msg.sender == request.user %}
+                        Vous — {{ msg.created_at|date:"d/m/Y H:i" }}
+                      {% else %}
+                        {{ msg.sender.username }} — {{ msg.created_at|date:"d/m/Y H:i" }}
+                      {% endif %}
+                    </div>
+                    <div class="p-2 rounded
+                                {% if msg.sender == request.user %}
+                                  bg-primary text-white
+                                {% else %}
+                                  bg-light
+                                {% endif %}"
+                         style="max-width: 280px; white-space: pre-wrap;">
+                      {{ msg.content }}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-muted mb-0">
+                Aucun message pour l'instant. Commencez la conversation !
+              </p>
+            {% endif %}
+          </div>
+
+          <form method="post" action="{% url 'users:send_message' user_obj.username %}">
+            {% csrf_token %}
+            <div class="mb-2">
+              {{ dm_form.content }}
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary">
+              Envoyer
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
   <div class="row g-4">
 
@@ -58,9 +119,15 @@
               <div class="small text-muted">
                 {{ post.get_post_type_display }} — {{ post.created_at|date:"d/m/Y H:i" }}
               </div>
-              <p class="mb-1 mt-2">
+
+              <p class="mb-2 mt-2">
                 {{ post.content|truncatechars:120 }}
               </p>
+
+              <div class="d-flex align-items-center gap-3 small text-muted">
+                <span>❤️ {{ post.total_likes }}</span>
+                <span>💬 {{ post.comments.count }}</span>
+              </div>
             </div>
           {% endfor %}
         </div>
