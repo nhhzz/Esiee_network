@@ -15,53 +15,53 @@
     {% if user.is_authenticated %}
 
       <!-- Déjeuners / Restaurant / Cafétéria / Gymnase -->
-      <a href="{% url 'events:list' %}?location=DEJEUNERS"   class="map-dot" style="top: 43%; left: 8%;"  title="Déjeuners"></a>
-      <a href="{% url 'events:list' %}?location=RESTAURANT" class="map-dot" style="top: 34%; left: 10%;" title="Restaurant"></a>
-      <a href="{% url 'events:list' %}?location=CAFETERIA"  class="map-dot" style="top: 27%; left: 12%;" title="Cafétéria"></a>
-      <a href="{% url 'events:list' %}?location=GYMNASE"    class="map-dot" style="top: 12%; left: 11%;" title="Gymnase"></a>
+      <a href="{% url 'events:list' %}?location=DEJEUNERS"   class="map-dot" style="top: 75%; left: 20%;"  title="Déjeuners"></a>
+      <a href="{% url 'events:list' %}?location=RESTAURANT" class="map-dot" style="top: 70%; left: 20%;" title="Restaurant"></a>
+      <a href="{% url 'events:list' %}?location=EXPOSES"  class="map-dot" style="top: 50%; left: 50%;" title="Exposés"></a>
+      <a href="{% url 'events:list' %}?location=AMPHI_DASSAULT"    class="map-dot" style="top: 55%; left: 44%;" title="Amphi M. Dassault"></a>
 
       <!-- Amphi / Epi 5 / Exposés -->
-      <a href="{% url 'events:list' %}?location=AMPHI_DASSAULT" class="map-dot" style="top: 34%; left: 25%;" title="Amphi M. Dassault"></a>
-      <a href="{% url 'events:list' %}?location=EPI5"           class="map-dot" style="top: 25%; left: 34%;" title="Epi 5"></a>
-      <a href="{% url 'events:list' %}?location=EXPOSES"        class="map-dot" style="top: 40%; left: 37%;" title="Exposés"></a>
+      <a href="{% url 'events:list' %}?location=GYMNASE" class="map-dot" style="top: 34%; left: 25%;" title="Gymnase"></a>
+      <a href="{% url 'events:list' %}?location=PORTE_PRINCIPALE"           class="map-dot" style="top: 60%; left: 62%;" title="Porte principale"></a>
+      <a href="{% url 'events:list' %}?location=CAFETERIA"        class="map-dot" style="top: 45%; left: 30%;" title="Cafétéria"></a>
 
       <!-- Centre : Amphi / Accueil / Porte principale -->
-      <a href="{% url 'events:list' %}?location=AMPHI"            class="map-dot" style="top: 32%; left: 45%;" title="Amphi"></a>
-      <a href="{% url 'events:list' %}?location=ACCUEIL"          class="map-dot" style="top: 22%; left: 50%;" title="Accueil"></a>
-      <a href="{% url 'events:list' %}?location=PORTE_PRINCIPALE" class="map-dot" style="top: 41%; left: 50%;" title="Porte principale"></a>
+      <a href="{% url 'events:list' %}?location=AMPHI"            class="map-dot" style="top: 51%; left: 51%;" title="Amphi"></a>
+      <a href="{% url 'events:list' %}?location=BIBLIOTHEQUE"          class="map-dot" style="top: 57%; left: 90%;" title="Bibliothèque"></a>
+      <a href="{% url 'events:list' %}?location=EPI5" class="map-dot" style="top: 41%; left: 50%;" title="Epi 5"></a>
 
       <!-- Droite : Epi 2 / Biblio / Poste Nord -->
-      <a href="{% url 'events:list' %}?location=EPI2"        class="map-dot" style="top: 31%; left: 60%;" title="Epi 2"></a>
-      <a href="{% url 'events:list' %}?location=BIBLIOTHEQUE" class="map-dot" style="top: 39%; left: 68%;" title="Bibliothèque"></a>
-      <a href="{% url 'events:list' %}?location=POSTE_NORD"   class="map-dot" style="top: 47%; left: 73%;" title="Poste Nord"></a>
+      <a href="{% url 'events:list' %}?location=EPI2"        class="map-dot" style="top: 48%; left: 73%;" title="Epi 2"></a>
+      <a href="{% url 'events:list' %}?location=ACCUEIL" class="map-dot" style="top: 41%; left: 62%;" title="Accueil"></a>
+      <a href="{% url 'events:list' %}?location=POSTE_NORD"   class="map-dot" style="top: 80%; left: 95%;" title="Poste Nord"></a>
 
       <!-- Extrême droite : Portes Nord / Rond-Point -->
       <a href="{% url 'events:list' %}?location=PORTE_NORD"  class="map-dot" style="top: 30%; left: 82%;" title="Porte Nord"></a>
-      <a href="{% url 'events:list' %}?location=PORTE_NORD"  class="map-dot" style="top: 22%; left: 88%;" title="Porte Nord (haut)"></a>
-      <a href="{% url 'events:list' %}?location=ROND_POINT"  class="map-dot" style="top: 40%; left: 90%;" title="Rond-Point"></a>
+      <a href="{% url 'events:list' %}?location=PORTE_NORD"  class="map-dot" style="top: 40%; left: 90%;" title="Porte Nord (haut)"></a>
+      <a href="{% url 'events:list' %}?location=ROND_POINT"  class="map-dot" style="top: 85%; left: 65%;" title="Rond-Point"></a>
 
     {% else %}
       {# Non connecté -> tous les points renvoient vers login #}
-      <a href="{% url 'login' %}" class="map-dot" style="top: 43%; left: 8%;"  title="Déjeuners"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 34%; left: 10%;" title="Restaurant"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 27%; left: 12%;" title="Cafétéria"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 75%; left: 20%;"  title="Déjeuners"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 70%; left: 20%;" title="Restaurant"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 45%; left: 30%;" title="Cafétéria"></a>
       <a href="{% url 'login' %}" class="map-dot" style="top: 12%; left: 11%;" title="Gymnase"></a>
 
-      <a href="{% url 'login' %}" class="map-dot" style="top: 34%; left: 25%;" title="Amphi M. Dassault"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 55%; left: 44%;" title="Amphi M. Dassault"></a>
       <a href="{% url 'login' %}" class="map-dot" style="top: 25%; left: 34%;" title="Epi 5"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 40%; left: 37%;" title="Exposés"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 50%; left: 50%;" title="Exposés"></a>
 
-      <a href="{% url 'login' %}" class="map-dot" style="top: 32%; left: 45%;" title="Amphi"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 22%; left: 50%;" title="Accueil"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 41%; left: 50%;" title="Porte principale"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 51%; left: 51%;" title="Amphi"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 41%; left: 62%;" title="Accueil"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 60%; left: 62%;" title="Porte principale"></a>
 
-      <a href="{% url 'login' %}" class="map-dot" style="top: 31%; left: 60%;" title="Epi 2"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 39%; left: 68%;" title="Bibliothèque"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 47%; left: 73%;" title="Poste Nord"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 48%; left: 73%;" title="Epi 2"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 57%; left: 90%;" title="Bibliothèque"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 80%; left: 95%;" title="Poste Nord"></a>
 
       <a href="{% url 'login' %}" class="map-dot" style="top: 30%; left: 82%;" title="Porte Nord"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 22%; left: 88%;" title="Porte Nord (haut)"></a>
-      <a href="{% url 'login' %}" class="map-dot" style="top: 40%; left: 90%;" title="Rond-Point"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 40%; left: 90%;" title="Porte Nord (haut)"></a>
+      <a href="{% url 'login' %}" class="map-dot" style="top: 85%; left: 65%;" title="Rond-Point"></a>
     {% endif %}
   </div>
 </div>
