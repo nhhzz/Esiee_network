@@ -26,8 +26,15 @@
          class="rounded-circle"
          style="width:24px; height:24px; object-fit:cover;">
   {% endif %}
-  <span>👤 Créé par {{ event.created_by.username }}</span>
+  <span>
+    👤 Créé par
+    <a href="{% url 'users:user_profile' event.created_by.username %}"
+       class="text-decoration-none">
+      {{ event.created_by.username }}
+    </a>
+  </span>
 </div>
+
 
       </div>
     </div>

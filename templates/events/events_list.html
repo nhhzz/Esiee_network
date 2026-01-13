@@ -152,7 +152,13 @@
                              alt="Photo de profil"
                              class="creator-avatar">
                     {% endif %}
-                    <span>Créé par {{ event.created_by.username }}</span>
+                    <span>
+                        Créé par
+                        <a href="{% url 'users:user_profile' event.created_by.username %}"
+                           style="text-decoration:none; color:inherit;">
+                            {{ event.created_by.username }}
+                        </a>
+                    </span>
                 </div>
             </div>
         {% endfor %}

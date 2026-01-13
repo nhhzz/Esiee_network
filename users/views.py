@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import SignupForm, LoginForm, ProfileForm
+from django.contrib.auth import get_user_model
+
+from .forms import ProfileForm
 from posts.models import Post
 from events.models import Event
+
+User = get_user_model()
 
 
 def home(request):
@@ -46,7 +49,48 @@ def user_logout(request):
     return redirect('users:home')
 
 @login_required
+def my_profile(request):
+    """
+    Mon profil perso : mes posts + mes événements.
+    """
+    user = request.user
+
+    posts = Post.objects.filter(author=user).order_by('-created_at')
+    events = Event.objects.filter(created_by=user).order_by('-start_at')
+
+    context = {
+        "user_obj": user,
+        "posts": posts,
+        "events": events,
+        "is_self": True,
+    }
+    return render(request, "users/my_profile.html", context)
+
+@login_required
+def user_profile(request, username):
+    """
+    Profil public d'un utilisateur (vu depuis posts/événements).
+    """
+    user_obj = get_object_or_404(User, username=username)
+
+    posts = Post.objects.filter(author=user_obj).order_by('-created_at')
+    events = Event.objects.filter(created_by=user_obj).order_by('-start_at')
+
+    context = {
+        "user_obj": user_obj,
+        "posts": posts,
+        "events": events,
+        "is_self": (user_obj == request.user),
+    }
+    return render(request, "users/my_profile.html", context)
+
+
+@login_required
 def profile(request):
+    """
+    Page pour modifier SON propre profil (username + photo de profil).
+    Accessible via le bouton 'Modifier le profil'.
+    """
     if request.method == "POST":
         form = ProfileForm(
             request.POST,
@@ -61,6 +105,7 @@ def profile(request):
         form = ProfileForm(instance=request.user)
 
     return render(request, "users/profile.html", {"form": form})
+
 @login_required
 def my_profile(request):
     user = request.user

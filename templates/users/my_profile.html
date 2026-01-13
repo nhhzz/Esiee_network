@@ -20,24 +20,33 @@
       {% endif %}
 
       <div>
-        <h1 class="mb-1">Mon profil</h1>
+        {% if is_self %}
+          <h1 class="mb-1">Mon profil</h1>
+        {% else %}
+          <h1 class="mb-1">Profil de {{ user_obj.username }}</h1>
+        {% endif %}
         <p class="text-muted mb-0">
           {{ user_obj.username }} — {{ user_obj.email }}
         </p>
       </div>
     </div>
 
-    <a href="{% url 'users:profile' %}" class="btn btn-outline-primary btn-sm">
-      Modifier le profil
-    </a>
+    {% if is_self %}
+      <a href="{% url 'users:profile' %}" class="btn btn-outline-primary btn-sm">
+        Modifier le profil
+      </a>
+    {% endif %}
   </div>
-
 
   <div class="row g-4">
 
     <!-- Colonne gauche : Posts -->
     <div class="col-md-6">
-      <h4 class="mb-3">Mes publications</h4>
+      {% if is_self %}
+        <h4 class="mb-3">Mes publications</h4>
+      {% else %}
+        <h4 class="mb-3">Publications de {{ user_obj.username }}</h4>
+      {% endif %}
 
       {% if posts %}
         <div class="list-group">
@@ -56,13 +65,23 @@
           {% endfor %}
         </div>
       {% else %}
-        <p class="text-muted">Tu n'as pas encore publié de post.</p>
+        <p class="text-muted">
+          {% if is_self %}
+            Tu n'as pas encore publié de post.
+          {% else %}
+            {{ user_obj.username }} n'a pas encore publié de post.
+          {% endif %}
+        </p>
       {% endif %}
     </div>
 
     <!-- Colonne droite : Événements -->
     <div class="col-md-6">
-      <h4 class="mb-3">Mes événements</h4>
+      {% if is_self %}
+        <h4 class="mb-3">Mes événements</h4>
+      {% else %}
+        <h4 class="mb-3">Événements de {{ user_obj.username }}</h4>
+      {% endif %}
 
       {% if events %}
         <div class="list-group">
@@ -80,7 +99,13 @@
           {% endfor %}
         </div>
       {% else %}
-        <p class="text-muted">Tu n'as pas encore créé d'événement.</p>
+        <p class="text-muted">
+          {% if is_self %}
+            Tu n'as pas encore créé d'événement.
+          {% else %}
+            {{ user_obj.username }} n'a pas encore créé d'événement.
+          {% endif %}
+        </p>
       {% endif %}
     </div>
 
