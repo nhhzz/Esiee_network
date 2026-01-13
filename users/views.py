@@ -3,6 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 
+from django.contrib.auth import login, logout
+from .forms import ProfileForm, SignupForm, LoginForm
+
+
 from .forms import ProfileForm
 from posts.models import Post
 from events.models import Event
@@ -47,24 +51,6 @@ def user_logout(request):
     logout(request)
     messages.info(request, "Vous êtes déconnecté.")
     return redirect('users:home')
-
-@login_required
-def my_profile(request):
-    """
-    Mon profil perso : mes posts + mes événements.
-    """
-    user = request.user
-
-    posts = Post.objects.filter(author=user).order_by('-created_at')
-    events = Event.objects.filter(created_by=user).order_by('-start_at')
-
-    context = {
-        "user_obj": user,
-        "posts": posts,
-        "events": events,
-        "is_self": True,
-    }
-    return render(request, "users/my_profile.html", context)
 
 @login_required
 def user_profile(request, username):
