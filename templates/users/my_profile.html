@@ -29,6 +29,10 @@
           {{ user_obj.username }} — {{ user_obj.email }}
         </p>
       </div>
+      <p class="text-muted small mb-0">
+        <strong>{{ user_obj.followers.count }}</strong> Abonnés ·
+        <strong>{{ user_obj.following.count }}</strong> Abonnements
+      </p>
     </div>
 
     {% if is_self %}
@@ -36,6 +40,19 @@
         Modifier le profil
       </a>
     {% else %}
+    <div class="d-flex gap-2">
+      {% if is_following %}
+      <a href="{% url 'users:unfollow_user' user_obj.username %}"
+         class="btn btn-outline-secondary btn-sm">
+        Se désabonner
+      </a>
+      {% else %}
+      <a href="{% url 'users:follow_user' user_obj.username %}"
+         class="btn btn-primary btn-sm">
+        Suivre
+      </a>
+      {% endif %}
+
       <button class="btn btn-outline-primary btn-sm"
               type="button"
               data-bs-toggle="collapse"
@@ -44,6 +61,7 @@
               aria-controls="dm-panel">
         Envoyer un message
       </button>
+    </div>
     {% endif %}
   </div>
 

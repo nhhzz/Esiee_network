@@ -17,4 +17,8 @@ urlpatterns = [
     # 🔽 nouvelle page Messages
     path('messages/', views.messages_view, name='messages'),
     path('messages/<str:username>/', views.messages_view, name='messages_with'),
+
+    # gestion des abonnés
+    path("follow/<str:username>/", views.follow_user, name="follow_user"),
+    path("unfollow/<str:username>/", views.unfollow_user, name="unfollow_user"),
 ]

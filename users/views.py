@@ -8,7 +8,7 @@ from .forms import ProfileForm, SignupForm, LoginForm
 from .forms import ProfileForm
 from .forms import ProfileForm, DirectMessageForm
 from posts.models import Post
-from .models import DirectMessage
+from .models import DirectMessage, Follow, User
 from events.models import Event
 
 User = get_user_model()
@@ -69,6 +69,12 @@ def user_profile(request, username):
     dm_form = None
 
     if not is_self:
+        # vue de l'abonnement
+        is_following = Follow.objects.filter(
+            follower=request.user,
+            followed=user_obj
+        ).exists()
+
         # conversation entre les 2
         dm_messages = DirectMessage.objects.filter(
             Q(sender=request.user, receiver=user_obj)
@@ -83,6 +89,7 @@ def user_profile(request, username):
         "is_self": is_self,
         "dm_messages": dm_messages,
         "dm_form": dm_form,
+        "is_following": is_following,
     }
     return render(request, "users/my_profile.html", context)
 
@@ -212,3 +219,32 @@ def messages_view(request, username=None):
         "dm_form": dm_form,
     }
     return render(request, "users/messages.html", context)
+
+@login_required
+def follow_user(request, username):
+    """
+    Suivre un autre utilisateur.
+    """
+    user_to_follow = get_object_or_404(User, username=username)
+
+    if user_to_follow != request.user:
+        Follow.objects.get_or_create(
+            follower=request.user,
+            followed=user_to_follow
+        )
+    return redirect("users:user_profile", username=username)
+
+
+@login_required
+def unfollow_user(request, username):
+    """
+    Se désabonner d'un utilisateur.
+    """
+    user_to_unfollow = get_object_or_404(User, username=username)
+
+    Follow.objects.filter(
+        follower=request.user,
+        followed=user_to_unfollow
+    ).delete()
+
+    return redirect("users:user_profile", username=username)

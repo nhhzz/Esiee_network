@@ -128,6 +128,18 @@
         </a>
     </div>
 
+    <div class="d-flex gap-2 mb-4">
+        <a href="{% url 'events:list' %}"
+           class="btn btn-sm {% if not filter_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Tous les événements
+        </a>
+
+        <a href="{% url 'events:list' %}?filter=following"
+           class="btn btn-sm {% if filter_type == 'following' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Mes abonnements
+        </a>
+    </div>
+
     {% if events %}
         {% for event in events %}
             <div class="event">

@@ -2,16 +2,30 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Post, Like, Comment
 from .forms import PostForm, CommentForm
+from users.models import Follow
 
 @login_required
 def posts_list(request):
-    posts = Post.objects.all().order_by("-created_at")
+    filter_follow = request.GET.get("filter")
+
+    if filter_follow == "following":
+        followed_users = Follow.objects.filter(
+            follower=request.user
+        ).values_list("followed", flat=True)
+
+        posts = Post.objects.filter(
+            author__in=followed_users
+        ).order_by("-created_at")
+    else:
+        posts = Post.objects.all().order_by("-created_at")
+
     comment_form = CommentForm()
 
     return render(request, 'posts/index.html', {
         'posts': posts,
         'comment_form': comment_form,
         'form': PostForm(),
+        'filter_follow': filter_follow,
     })
 
 
