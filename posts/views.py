@@ -36,7 +36,7 @@ def like_post(request, post_id):
     like, created = Like.objects.get_or_create(user=request.user, post=post)
     if not created:
         like.delete()
-    return redirect('posts_list')
+    return redirect('posts:posts_list')
 
 
 @login_required
@@ -58,19 +58,19 @@ def add_comment(request, post_id):
             comment.parent = parent   
             comment.save()
 
-    return redirect('posts_list')
+    return redirect('posts:posts_list')
 
 @login_required
 def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     
     if post.author != request.user:
-        return redirect('posts_list')
+        return redirect('posts:posts_list')
     form = PostForm(request.POST or None, request.FILES or None, instance=post)
 
     if form.is_valid():
         form.save()
-        return redirect('posts_list')
+        return redirect('posts:posts_list')
 
     return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
 
@@ -79,10 +79,10 @@ def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
     if post.author != request.user:
-        return redirect('posts_list')
+        return redirect('posts:posts_list')
 
     post.delete()
-    return redirect('posts_list')
+    return redirect('posts:posts_list')
 
 @login_required
 def reply_comment(request, comment_id):
@@ -96,7 +96,7 @@ def reply_comment(request, comment_id):
             parent=parent,
             text=text
         )
-    return redirect("posts_list")
+    return redirect("posts:posts_list")
 
 @login_required
 def create_post(request):
@@ -106,8 +106,8 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            return redirect('posts_list')
+            return redirect('posts:posts_list')
     else:
         form = PostForm()
 
-    return redirect('posts_list')
+    return redirect('posts:posts_list')
