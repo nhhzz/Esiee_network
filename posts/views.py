@@ -49,7 +49,7 @@ def like_post(request, post_id):
             "liked": created,
             "count": post.total_likes(),
         })
-    return redirect(request.META.get("HTTP_REFERER", reverse("posts_list")))
+    return redirect(request.META.get("HTTP_REFERER", reverse('posts:posts_list')))
 
 
 
@@ -83,7 +83,7 @@ def add_comment(request, post_id):
                     "text_html": linebreaksbr(escape(comment.text)),
                 })
 
-    return redirect('posts_list')
+    return redirect('posts:posts_list')
 
 
 @login_required
@@ -135,7 +135,7 @@ def create_post(request):
         post = form.save(commit=False)
         post.author = request.user
         post.save()
-        return redirect('posts_list')
+        return redirect('posts:posts_list')
 
     # If invalid, re-render list with errors instead of silent redirect
     posts = Post.objects.all().order_by("-created_at")
