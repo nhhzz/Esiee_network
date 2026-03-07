@@ -17,7 +17,6 @@ INSTALLED_APPS = [
     'maps',
     'posts',
     'events',
-    'messages_app',
 ]
 
 MIDDLEWARE = [

@@ -10,7 +10,6 @@ urlpatterns = [
     path('map/', include('maps.urls')),
     path('posts/', include('posts.urls')),
     path('events/', include('events.urls')),
-    path('messages/', include('messages_app.urls')),
 ]
 
 if settings.DEBUG:
