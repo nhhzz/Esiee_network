@@ -74,7 +74,7 @@ def add_comment(request, post_id):
             comment.parent = parent   
             comment.save()
 
-<<<<<<< HEAD
+
             if request.headers.get("x-requested-with") == "XMLHttpRequest":
                 return JsonResponse({
                     "id": comment.id,
@@ -84,9 +84,7 @@ def add_comment(request, post_id):
                 })
 
     return redirect('posts_list')
-=======
-    return redirect('posts:posts_list')
->>>>>>> 87eedfd77abdbed83a4fcf0ea37b35a83a77d6bd
+
 
 @login_required
 def edit_post(request, post_id):
@@ -131,7 +129,7 @@ def reply_comment(request, comment_id):
 @login_required
 @require_POST
 def create_post(request):
-<<<<<<< HEAD
+
     form = PostForm(request.POST, request.FILES)
     if form.is_valid():
         post = form.save(commit=False)
@@ -147,16 +145,4 @@ def create_post(request):
         'comment_form': comment_form,
         'form': form,
     })
-=======
-    if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
-            return redirect('posts:posts_list')
-    else:
-        form = PostForm()
 
-    return redirect('posts:posts_list')
->>>>>>> 87eedfd77abdbed83a4fcf0ea37b35a83a77d6bd
