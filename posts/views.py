@@ -1,5 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.http import JsonResponse
+from django.utils.html import escape
+from django.utils.timesince import timesince
+from django.template.defaultfilters import linebreaksbr
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from .models import Post, Like, Comment
 from .forms import PostForm, CommentForm
 
@@ -17,15 +23,22 @@ def posts_list(request):
 
 
 @login_required
+@require_POST
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     like, created = Like.objects.get_or_create(user=request.user, post=post)
     if not created:
         like.delete()
-    return redirect('posts_list')
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({
+            "liked": created,
+            "count": post.total_likes(),
+        })
+    return redirect(request.META.get("HTTP_REFERER", reverse("posts_list")))
 
 
 @login_required
+@require_POST
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
@@ -44,6 +57,14 @@ def add_comment(request, post_id):
             comment.parent = parent   
             comment.save()
 
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({
+                    "id": comment.id,
+                    "user": comment.user.username,
+                    "created_at": timesince(comment.created_at),
+                    "text_html": linebreaksbr(escape(comment.text)),
+                })
+
     return redirect('posts_list')
 
 @login_required
@@ -61,6 +82,7 @@ def edit_post(request, post_id):
     return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
 
 @login_required
+@require_POST
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
@@ -71,6 +93,7 @@ def delete_post(request, post_id):
     return redirect('posts_list')
 
 @login_required
+@require_POST
 def reply_comment(request, comment_id):
     parent = Comment.objects.get(id=comment_id)
     
@@ -85,15 +108,20 @@ def reply_comment(request, comment_id):
     return redirect("posts_list")
 
 @login_required
+@require_POST
 def create_post(request):
-    if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
-            return redirect('posts_list')
-    else:
-        form = PostForm()
+    form = PostForm(request.POST, request.FILES)
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+        return redirect('posts_list')
 
-    return redirect('posts_list')
+    # If invalid, re-render list with errors instead of silent redirect
+    posts = Post.objects.all().order_by("-created_at")
+    comment_form = CommentForm()
+    return render(request, 'posts/index.html', {
+        'posts': posts,
+        'comment_form': comment_form,
+        'form': form,
+    })

@@ -4,17 +4,26 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-primary">Mur des publications</h2>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">
-      <i class="bi bi-pencil-square"></i> Créer une publication
-    </button>
+<div class="container py-4 post-wrap">
+  <div class="post-hero mb-4">
+    <div class="row align-items-center g-3">
+      <div class="col-lg-8">
+        <h1 class="mb-2">Mur des publications</h1>
+        <p class="mb-0 text-light opacity-75">
+          Partage tes id&eacute;es, tes projets et les actus du campus.
+        </p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <button class="btn btn-warning fw-semibold" data-bs-toggle="modal" data-bs-target="#createPostModal">
+          <i class="bi bi-pencil-square me-1"></i> Cr&eacute;er une publication
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Liste des publications -->
   {% for post in posts %}
-  <div class="card shadow-sm mb-4 border-0 post-card">
+  <div id="post-{{ post.id }}" class="card shadow-sm mb-4 border-0 post-card">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <div class="d-flex align-items-center">
@@ -27,16 +36,15 @@
                  alt="avatar"
                  class="rounded-circle me-3 post-avatar">
           {% endif %}
-<div>
-  <strong class="d-block">
-    <a href="{% url 'users:user_profile' post.author.username %}"
-       class="text-decoration-none text-dark">
-      {{ post.author.username }}
-    </a>
-  </strong>
-  <small class="text-muted">{{ post.created_at|date:"d/m/Y H:i" }}</small>
-</div>
-
+          <div>
+            <strong class="d-block">
+              <a href="{% url 'users:user_profile' post.author.username %}"
+                 class="text-decoration-none text-dark">
+                {{ post.author.username }}
+              </a>
+            </strong>
+            <small class="text-muted">{{ post.created_at|date:"d/m/Y H:i" }}</small>
+          </div>
         </div>
         <span class="badge bg-info text-dark">{{ post.get_post_type_display }}</span>
       </div>
@@ -51,19 +59,25 @@
       <p class="card-text post-content">{{ post.content|linebreaksbr }}</p>
 
       <div class="mt-3 d-flex align-items-center gap-2">
-        <a href="{% url 'like_post' post.id %}" class="btn btn-like d-flex align-items-center">
-          <i class="bi bi-heart-fill me-2"></i>
-          <span class="like-count">{{ post.total_likes }}</span>
-        </a>
+        <form method="post" action="{% url 'like_post' post.id %}" class="d-inline js-like-form" data-post-id="{{ post.id }}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-like d-flex align-items-center js-like-btn">
+            <i class="bi bi-heart-fill me-2"></i>
+            <span class="like-count">{{ post.total_likes }}</span>
+          </button>
+        </form>
 
         {% if post.author == user %}
         <a href="{% url 'edit_post' post.id %}" class="btn btn-warning btn-sm">
             <i class="bi bi-pencil"></i> Modifier
         </a>
-        <a href="{% url 'delete_post' post.id %}" class="btn btn-sm btn-outline-secondary"
-           onclick="return confirm('Voulez-vous supprimer cette publication ?');">
-           <i class="bi bi-trash"></i> Supprimer
-        </a>
+        <form method="post" action="{% url 'delete_post' post.id %}" class="d-inline"
+              onsubmit="return confirm('Voulez-vous supprimer cette publication ?');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-trash"></i> Supprimer
+          </button>
+        </form>
         {% endif %}
       </div>
 
@@ -73,51 +87,44 @@
       <h6 class="text-secondary"><i class="bi bi-chat-dots"></i> Commentaires</h6>
 
       {% with comments=post.comments.all %}
-    <div id="comments-{{ post.id }}">
+      <div id="comments-{{ post.id }}">
 
         {% for comment in comments %}
-            {% if forloop.counter <= 2 %}
-
-                <!-- Commentaires visibles -->
-                <div class="comment-box">
-                    <strong>{{ comment.user.username }}</strong>
-                    <small class="text-muted"> · {{ comment.created_at|timesince }}</small>
-                    <div class="mt-1">{{ comment.text|linebreaksbr }}</div>
-                </div>
-
-            {% else %}
-
-                {% if forloop.counter == 3 %}
-                    <div id="hidden-comments-{{ post.id }}" class="d-none">
-                {% endif %}
-
-                <!-- Commentaires cachés -->
-                <div class="comment-box small">
-                    <strong>{{ comment.user.username }}</strong>
-                    <small class="text-muted"> · {{ comment.created_at|timesince }}</small>
-                    <div class="mt-1">{{ comment.text|truncatechars:200 }}</div>
-                </div>
-
-                {% if forloop.last %}
-                    </div>
-                    <button class="btn btn-sm btn-link p-0"
-                            id="toggle-comments-btn-{{ post.id }}"
-                            onclick="toggleHiddenComments({{ post.id }})">
-                        Voir plus ({{ comments|length|add:"-2" }})
-                    </button>
-                {% endif %}
-
+          {% if forloop.counter <= 2 %}
+            <div class="comment-box">
+              <strong>{{ comment.user.username }}</strong>
+              <small class="text-muted"> &middot; {{ comment.created_at|timesince }}</small>
+              <div class="mt-1">{{ comment.text|linebreaksbr }}</div>
+            </div>
+          {% else %}
+            {% if forloop.counter == 3 %}
+              <div id="hidden-comments-{{ post.id }}" class="d-none">
             {% endif %}
+
+            <div class="comment-box small">
+              <strong>{{ comment.user.username }}</strong>
+              <small class="text-muted"> &middot; {{ comment.created_at|timesince }}</small>
+              <div class="mt-1">{{ comment.text|truncatechars:200 }}</div>
+            </div>
+
+            {% if forloop.last %}
+              </div>
+              <button class="btn btn-sm btn-link p-0"
+                      id="toggle-comments-btn-{{ post.id }}"
+                      onclick="toggleHiddenComments({{ post.id }})">
+                Voir plus ({{ comments|length|add:"-2" }})
+              </button>
+            {% endif %}
+          {% endif %}
         {% empty %}
-            <p class="text-muted">Aucun commentaire pour le moment.</p>
+          <p class="text-muted">Aucun commentaire pour le moment.</p>
         {% endfor %}
 
-    </div>
-{% endwith %}
-
+      </div>
+      {% endwith %}
 
       <!-- Formulaire de commentaire principal -->
-      <form method="post" action="{% url 'add_comment' post.id %}" class="d-flex mt-3">
+      <form method="post" action="{% url 'add_comment' post.id %}" class="d-flex mt-3 js-comment-form" data-post-id="{{ post.id }}">
         {% csrf_token %}
         {{ comment_form.text }}
         <button class="btn btn-sm btn-outline-primary ms-2" type="submit">
@@ -128,7 +135,7 @@
     </div>
   </div>
   {% empty %}
-  <p class="text-center text-muted">Aucune publication pour le moment </p>
+  <p class="text-center text-muted">Aucune publication pour le moment</p>
   {% endfor %}
 </div>
 
@@ -143,7 +150,7 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-          <form method="post" enctype="multipart/form-data" action="{% url 'create_post' %}">
+        <form method="post" enctype="multipart/form-data" action="{% url 'create_post' %}">
           {% csrf_token %}
           <div class="mb-3">{{ form.title }}</div>
           <div class="mb-3">{{ form.content }}</div>
@@ -152,7 +159,7 @@
           <div class="mb-3">
             {{ form.image }}
             <img id="imagePreview" class="img-fluid rounded mt-3 shadow-sm"
-                 style="display:none;max-height:300px;object-fit:cover;width:100%;" alt="Prévisualisation">
+                 style="display:none;max-height:300px;object-fit:cover;width:100%;" alt="Pr&eacute;visualisation">
           </div>
 
           <div class="text-end">
@@ -160,7 +167,7 @@
               <i class="bi bi-send"></i> Publier
             </button>
             <button type="button" class="btn btn-secondary" onclick="showPreview()">
-              Aperçu
+              Aper&ccedil;u
             </button>
           </div>
         </form>
@@ -174,7 +181,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content shadow-lg border-0">
       <div class="modal-header bg-secondary text-white">
-        <h5 class="modal-title"><i class="bi bi-eye"></i> Aperçu de votre publication</h5>
+        <h5 class="modal-title"><i class="bi bi-eye"></i> Aper&ccedil;u de votre publication</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -213,26 +220,109 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showPreview() {
-    const title = document.getElementById("id_title")?.value || "(Sans titre)";
-    const content = document.getElementById("id_content")?.value || "(Aucun contenu)";
-    const select = document.getElementById("id_post_type");
-    const type = select ? select.options[select.selectedIndex].text : "";
-    const imgInput = document.getElementById("id_image");
-    const previewImg = document.getElementById("previewImage");
+  const title = document.getElementById("id_title")?.value || "(Sans titre)";
+  const content = document.getElementById("id_content")?.value || "(Aucun contenu)";
+  const select = document.getElementById("id_post_type");
+  const type = select ? select.options[select.selectedIndex].text : "";
+  const imgInput = document.getElementById("id_image");
+  const previewImg = document.getElementById("previewImage");
 
-    document.getElementById("previewTitle").innerText = title;
-    document.getElementById("previewContent").innerText = content;
-    document.getElementById("previewType").innerText = type;
+  document.getElementById("previewTitle").innerText = title;
+  document.getElementById("previewContent").innerText = content;
+  document.getElementById("previewType").innerText = type;
 
-    if (imgInput && imgInput.files && imgInput.files[0]) {
-        previewImg.src = URL.createObjectURL(imgInput.files[0]);
-        previewImg.style.display = "block";
-    } else {
-        previewImg.style.display = "none";
-    }
+  if (imgInput && imgInput.files && imgInput.files[0]) {
+    previewImg.src = URL.createObjectURL(imgInput.files[0]);
+    previewImg.style.display = "block";
+  } else {
+    previewImg.style.display = "none";
+  }
 
-    new bootstrap.Modal(document.getElementById("previewModal")).show();
+  new bootstrap.Modal(document.getElementById("previewModal")).show();
 }
+
+/* like without page reload */
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return "";
+}
+
+document.querySelectorAll('.js-like-form').forEach(form => {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = form.getAttribute('action');
+    const csrftoken = getCookie('csrftoken');
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const countEl = form.querySelector('.like-count');
+      if (countEl && typeof data.count !== 'undefined') {
+        countEl.textContent = data.count;
+      }
+    } catch (err) {
+      // silent fail; form fallback still works if JS disabled
+    }
+  });
+});
+
+/* add comment without page reload */
+document.querySelectorAll('.js-comment-form').forEach(form => {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = form.getAttribute('action');
+    const csrftoken = getCookie('csrftoken');
+    const postId = form.getAttribute('data-post-id');
+    const formData = new FormData(form);
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: formData,
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const list = document.getElementById(`comments-${postId}`);
+      if (!list) return;
+
+      const box = document.createElement('div');
+      box.className = 'comment-box';
+      box.innerHTML = `
+        <strong>${data.user}</strong>
+        <small class="text-muted"> &middot; ${data.created_at}</small>
+        <div class="mt-1">${data.text_html}</div>
+      `;
+
+      const emptyMsg = list.querySelector('p.text-muted');
+      if (emptyMsg) emptyMsg.remove();
+
+      list.insertBefore(box, list.firstChild);
+
+      const toggleBtn = document.getElementById(`toggle-comments-btn-${postId}`);
+      const hiddenContainer = document.getElementById(`hidden-comments-${postId}`);
+      if (toggleBtn && hiddenContainer && hiddenContainer.classList.contains('d-none')) {
+        const hiddenCount = hiddenContainer.querySelectorAll('.comment-box').length;
+        toggleBtn.innerText = `Voir plus (${hiddenCount})`;
+      }
+
+      const input = form.querySelector('textarea, input[type="text"]');
+      if (input) input.value = '';
+    } catch (err) {
+      // silent fail; form fallback still works if JS disabled
+    }
+  });
+});
 
 /* toggle reply form */
 function toggleReplyForm(commentId) {
@@ -288,18 +378,91 @@ function updateLivePreview() {
 
 <!-- Styles -->
 <style>
-  body { background-color: #f7f9fc; }
-  .card { transition: all 0.18s ease; border-radius:12px; }
-  .card:hover { transform: translateY(-4px); box-shadow: 0px 8px 22px rgba(3,10,45,0.08); }
-  .post-avatar { width:48px; height:48px; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
-  .post-image { border-radius:10px; }
-  .post-content { white-space: pre-wrap; }
-  .btn-like { background: transparent; border: 1px solid rgba(220,38,38,0.08); padding:6px 10px; border-radius:8px; color:#dc3545; }
-  .btn-like .like-count { font-weight:600; }
-  .comment-box { background-color: #fff; border-left: 3px solid #0d6efd; padding: 10px; margin-bottom: 10px; border-radius: 8px; }
-  .reply-box { background:#f1f6ff; border-radius:6px; padding:8px; }
-  .hidden-comments { transition: max-height 0.2s ease; }
-  .reply-form input, .reply-form textarea { width:100%; }
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+
+  body {
+    background: radial-gradient(1200px 600px at 10% -10%, #dbeafe 0%, transparent 60%),
+                radial-gradient(900px 500px at 110% 0%, #ffe4e6 0%, transparent 60%),
+                #f8fafc;
+  }
+
+  .post-wrap {
+    font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .post-hero {
+    background: linear-gradient(120deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+    color: #e2e8f0;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
+  }
+
+  .post-hero h1 {
+    font-family: "Fraunces", serif;
+  }
+
+  .card {
+    transition: all 0.18s ease;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0px 8px 22px rgba(3,10,45,0.08);
+  }
+
+  .post-avatar {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .post-image {
+    border-radius: 10px;
+  }
+
+  .post-content {
+    white-space: pre-wrap;
+  }
+
+  .btn-like {
+    background: transparent;
+    border: 1px solid rgba(220,38,38,0.12);
+    padding: 6px 10px;
+    border-radius: 10px;
+    color: #dc3545;
+  }
+
+  .btn-like .like-count {
+    font-weight: 600;
+  }
+
+  .comment-box {
+    background-color: #fff;
+    border-left: 3px solid #0d6efd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  .reply-box {
+    background: #f1f6ff;
+    border-radius: 6px;
+    padding: 8px;
+  }
+
+  .hidden-comments {
+    transition: max-height 0.2s ease;
+  }
+
+  .reply-form input,
+  .reply-form textarea {
+    width: 100%;
+  }
 </style>
 
 {% endblock %}

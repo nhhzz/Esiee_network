@@ -1,68 +1,146 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container py-4" style="max-width: 900px;">
-  <div class="d-flex justify-content-between align-items-start mb-3">
-    <div>
-      <h1 class="mb-1">{{ event.title }}</h1>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-      <div class="text-muted">
-        <div>
-          🕒 {{ event.start_at|date:"d/m/Y H:i" }}
-          {% if event.end_at %} → {{ event.end_at|date:"d/m/Y H:i" }}{% endif %}
-        </div>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
 
-        <!-- 📍 Lieu lisible -->
+  :root {
+    --ev-ink: #0f172a;
+    --ev-primary: #2563eb;
+    --ev-warm: #f97316;
+  }
+
+  body {
+    background: radial-gradient(1200px 600px at 10% -10%, #dbeafe 0%, transparent 60%),
+                radial-gradient(900px 500px at 110% 0%, #ffe4e6 0%, transparent 60%),
+                #f8fafc;
+  }
+
+  .ev-detail {
+    font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .ev-header {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  }
+
+  .ev-title {
+    font-family: "Fraunces", serif;
+  }
+
+  .ev-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .ev-info {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 14px;
+    padding: 18px;
+  }
+
+  .ev-info i {
+    color: #38bdf8;
+  }
+
+  .ev-description {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 22px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+  }
+</style>
+
+<div class="container py-4 ev-detail" style="max-width: 980px;">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div class="ev-header flex-grow-1">
+      <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <span class="ev-chip"><i class="bi bi-calendar-event"></i> &Eacute;v&eacute;nement</span>
         {% if event.location %}
-          <div>
-            📍 {{ event.get_location_display }}
-          </div>
+          <span class="ev-chip"><i class="bi bi-geo-alt"></i> {{ event.get_location_display }}</span>
         {% endif %}
+      </div>
 
-<div class="d-flex align-items-center gap-2">
-  {% if event.created_by.profile_image %}
-    <img src="{{ event.created_by.profile_image.url }}"
-         alt="Photo de profil"
-         class="rounded-circle"
-         style="width:24px; height:24px; object-fit:cover;">
-  {% endif %}
-  <span>
-    👤 Créé par
-    <a href="{% url 'users:user_profile' event.created_by.username %}"
-       class="text-decoration-none">
-      {{ event.created_by.username }}
-    </a>
-  </span>
-</div>
+      <h1 class="ev-title mb-2">{{ event.title }}</h1>
 
+      <div class="d-flex flex-wrap gap-3 text-muted small">
+        <span><i class="bi bi-clock"></i> {{ event.start_at|date:"d/m/Y H:i" }}</span>
+        {% if event.end_at %}
+          <span><i class="bi bi-hourglass-split"></i> {{ event.end_at|date:"d/m/Y H:i" }}</span>
+        {% endif %}
+      </div>
 
+      <div class="d-flex align-items-center gap-2 mt-3">
+        {% if event.created_by.profile_image %}
+          <img src="{{ event.created_by.profile_image.url }}"
+               alt="Photo de profil"
+               class="rounded-circle"
+               style="width:28px; height:28px; object-fit:cover;">
+        {% endif %}
+        <span class="text-muted small">
+          Cr&eacute;&eacute; par
+          <a href="{% url 'users:user_profile' event.created_by.username %}" class="text-decoration-none">
+            {{ event.created_by.username }}
+          </a>
+        </span>
       </div>
     </div>
 
-    <!-- Colonne actions -->
-    <div class="d-flex flex-column align-items-end gap-2">
-      <a class="btn btn-outline-secondary" href="{% url 'events:list' %}">Retour</a>
-
+    <div class="d-flex flex-column gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'events:list' %}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
       {% if request.user == event.created_by %}
-        <div class="d-flex gap-2">
-          <a class="btn btn-outline-primary" href="{% url 'events:update' event.pk %}">Modifier</a>
-          <a class="btn btn-outline-danger" href="{% url 'events:delete' event.pk %}">Supprimer</a>
-        </div>
+        <a class="btn btn-outline-primary" href="{% url 'events:update' event.pk %}">
+          Modifier
+        </a>
+        <a class="btn btn-outline-danger" href="{% url 'events:delete' event.pk %}">
+          Supprimer
+        </a>
       {% endif %}
     </div>
-
   </div>
 
-  {% if event.description %}
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Description</h5>
-        <p class="card-text">{{ event.description|linebreaksbr }}</p>
+  <div class="row g-3">
+    <div class="col-lg-4">
+      <div class="ev-info">
+        <div class="mb-2 fw-semibold">Infos rapides</div>
+        <div class="d-flex flex-column gap-2 small">
+          <span><i class="bi bi-clock"></i> D&eacute;but : {{ event.start_at|date:"d/m/Y H:i" }}</span>
+          {% if event.end_at %}
+            <span><i class="bi bi-hourglass-split"></i> Fin : {{ event.end_at|date:"d/m/Y H:i" }}</span>
+          {% endif %}
+          {% if event.location %}
+            <span><i class="bi bi-geo-alt"></i> Lieu : {{ event.get_location_display }}</span>
+          {% endif %}
+        </div>
       </div>
     </div>
-  {% else %}
-    <p class="text-muted">Aucune description.</p>
-  {% endif %}
+
+    <div class="col-lg-8">
+      {% if event.description %}
+        <div class="ev-description">
+          <h5 class="mb-2">Description</h5>
+          <p class="mb-0">{{ event.description|linebreaksbr }}</p>
+        </div>
+      {% else %}
+        <div class="ev-description text-muted">Aucune description.</div>
+      {% endif %}
+    </div>
+  </div>
 </div>
 
 {% endblock %}

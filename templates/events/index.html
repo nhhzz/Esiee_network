@@ -1,1 +1,80 @@
-{% extends 'base.html' %}{% block content %}<div class='container py-5'><h3>Events</h3><p>À venir…</p></div>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+
+  body {
+    background: radial-gradient(1200px 600px at 10% -10%, #dbeafe 0%, transparent 60%),
+                radial-gradient(900px 500px at 110% 0%, #ffe4e6 0%, transparent 60%),
+                #f8fafc;
+  }
+
+  .ev-landing {
+    font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .ev-hero {
+    background: linear-gradient(120deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+    color: #e2e8f0;
+    border-radius: 18px;
+    padding: 36px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
+  }
+
+  .ev-hero h1 {
+    font-family: "Fraunces", serif;
+  }
+
+  .ev-feature {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+  }
+</style>
+
+<div class="container py-4 ev-landing">
+  <div class="ev-hero mb-4">
+    <h1 class="mb-2">Ton campus, tes &eacute;v&eacute;nements</h1>
+    <p class="mb-3 text-light opacity-75">
+      Explore les sorties, les clubs et les moments phares de la vie &eacute;tudiante.
+    </p>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{% url 'events:list' %}" class="btn btn-warning fw-semibold">
+        Voir l'agenda
+      </a>
+      <a href="{% url 'events:create' %}" class="btn btn-outline-light">
+        Cr&eacute;er un &eacute;v&eacute;nement
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="ev-feature">
+        <i class="bi bi-calendar2-week h4 text-primary"></i>
+        <h5 class="mt-2">Planifie</h5>
+        <p class="text-muted mb-0">Programme tes &eacute;v&eacute;nements en quelques clics.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ev-feature">
+        <i class="bi bi-geo-alt h4 text-primary"></i>
+        <h5 class="mt-2">Rassemble</h5>
+        <p class="text-muted mb-0">Choisis des lieux clairs pour guider la communaut&eacute;.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ev-feature">
+        <i class="bi bi-people h4 text-primary"></i>
+        <h5 class="mt-2">Partage</h5>
+        <p class="text-muted mb-0">Invite, motive et fais vivre les moments ESIEE.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
