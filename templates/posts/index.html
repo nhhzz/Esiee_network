@@ -68,7 +68,7 @@
         </form>
 
         {% if post.author == user %}
-        <a href="{% url 'edit_post' post.id %}" class="btn btn-warning btn-sm">
+        <a href="{% url 'posts:edit_post' post.id %}" class="btn btn-warning btn-sm">
             <i class="bi bi-pencil"></i> Modifier
         </a>
         <form method="post" action="{% url 'delete_post' post.id %}" class="d-inline"

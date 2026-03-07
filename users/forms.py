@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User
+from .models import User, DirectMessage
 
 ESIEE_DOMAIN='@edu.esiee.fr'
 
@@ -45,3 +45,19 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["username", "profile_image"]
+
+class DirectMessageForm(forms.ModelForm):
+    content = forms.CharField(
+        label="Votre message",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": 3,
+                "placeholder": "Écrire un message…",
+            }
+        ),
+    )
+
+    class Meta:
+        model = DirectMessage
+        fields = ["content"]

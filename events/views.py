@@ -12,6 +12,7 @@ from django.utils import timezone
 
 from .forms import EventForm
 from .models import Event, LOCATION_CHOICES
+from users.models import Follow
 
 """""
 @login_required
@@ -27,9 +28,16 @@ def events_list(request):
 """
 @login_required
 def events_list(request):
+    filter_follow = request.GET.get("filter")
     location_code = request.GET.get("location")
 
-    events = Event.objects.all().order_by("start_at", "title")
+    events = Event.objects.all()
+
+    if filter_follow == "following":
+        followed_users = request.user.following.values_list(
+            "followed_id", flat=True
+        )
+        events = events.filter(created_by__in=followed_users)
 
     filtered_location_label = None
     if location_code:
@@ -38,10 +46,13 @@ def events_list(request):
         choices_dict = dict(LOCATION_CHOICES)
         filtered_location_label = choices_dict.get(location_code)
 
+    events = events.order_by("start_at", "title")
+
     context = {
         "events": events,
         "filtered_location": filtered_location_label,
         "raw_location": location_code,
+        "filter_follow": filter_follow,
     }
     return render(request, "events/events_list.html", context)
 
