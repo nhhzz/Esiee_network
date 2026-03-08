@@ -46,30 +46,10 @@
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
             {% if user.is_authenticated %}
 
-              <!-- Dropdown Profil -->
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle"
-                   href="#"
-                   id="profileDropdown"
-                   role="button"
-                   data-bs-toggle="dropdown"
-                   aria-expanded="false">
-                  <i class="bi bi-person-circle me-1"></i> Profil
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-1" href="{% url 'users:my_profile' %}">
+                  <i class="bi bi-person-circle"></i> Profil
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                  <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'users:my_profile' %}">
-                      <i class="bi bi-person"></i>
-                      Mon profil
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'users:profile' %}">
-                      <i class="bi bi-gear"></i>
-                      Modifier le profil
-                    </a>
-                  </li>
-                </ul>
               </li>
 
               <li class="nav-item">
