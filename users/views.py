@@ -200,6 +200,25 @@ def my_profile(request):
 
 
 @login_required
+def user_search(request):
+    query = request.GET.get("q", "").strip()
+    users = User.objects.none()
+
+    if query:
+        users = (
+            User.objects.filter(username__icontains=query)
+            .exclude(pk=request.user.pk)
+            .order_by("username")[:30]
+        )
+
+    context = {
+        "query": query,
+        "users": users,
+    }
+    return render(request, "users/user_search.html", context)
+
+
+@login_required
 def send_direct_message(request, username):
     receiver = get_object_or_404(User, username=username)
 

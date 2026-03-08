@@ -43,6 +43,18 @@
               </a>
             </li>
           </ul>
+          {% if user.is_authenticated %}
+            <form class="d-flex my-2 my-lg-0 me-lg-3" method="get" action="{% url 'users:user_search' %}" role="search">
+              <input
+                class="form-control form-control-sm me-2"
+                type="search"
+                name="q"
+                placeholder="Rechercher un utilisateur"
+                aria-label="Rechercher un utilisateur"
+              >
+              <button class="btn btn-outline-light btn-sm" type="submit">Rechercher</button>
+            </form>
+          {% endif %}
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
             {% if user.is_authenticated %}
 

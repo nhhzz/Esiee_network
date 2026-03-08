@@ -45,6 +45,7 @@ urlpatterns = [
 
     path('profile/', views.profile, name='profile'),
     path('mon-profil/', views.my_profile, name='my_profile'),
+    path('search-users/', views.user_search, name='user_search'),
     path('profil/<str:username>/', views.user_profile, name='user_profile'),
     path('profil/<str:username>/message/', views.send_direct_message, name='send_message'),
 

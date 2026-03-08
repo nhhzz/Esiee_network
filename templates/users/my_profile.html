@@ -42,6 +42,10 @@
               <i class="bi bi-pencil-square me-1"></i>
               Modifier le profil
             </a>
+            <a href="{% url 'users:user_search' %}" class="btn btn-outline-light">
+              <i class="bi bi-search me-1"></i>
+              Rechercher un utilisateur
+            </a>
           {% else %}
             {% if is_following %}
               <a href="{% url 'users:unfollow_user' user_obj.username %}" class="btn btn-outline-light">

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-4 py-lg-5" style="max-width: 980px;">
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="text-light p-4 p-md-5" style="background: linear-gradient(110deg, #0f193b 0%, #182d57 55%, #223f72 100%);">
+      <h1 class="h2 mb-2">Rechercher un utilisateur</h1>
+      <p class="mb-0 opacity-75">
+        Trouve rapidement un compte par nom d'utilisateur et ouvre son profil.
+      </p>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+      <form method="get" action="{% url 'users:user_search' %}" class="row g-2 mb-4">
+        <div class="col-md-9">
+          <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            class="form-control form-control-lg"
+            placeholder="Exemple : pseudo_user"
+          >
+        </div>
+        <div class="col-md-3 d-grid">
+          <button type="submit" class="btn btn-primary btn-lg">
+            Rechercher
+          </button>
+        </div>
+      </form>
+
+      {% if query %}
+        <p class="text-muted">
+          {% if users %}
+            {{ users|length }} r&eacute;sultat(s) pour <strong>{{ query }}</strong>.
+          {% else %}
+            Aucun utilisateur trouv&eacute; pour <strong>{{ query }}</strong>.
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <div class="list-group list-group-flush">
+        {% for user_item in users %}
+          <a href="{% url 'users:user_profile' user_item.username %}" class="list-group-item list-group-item-action px-0 py-3">
+            <div class="d-flex align-items-center gap-3">
+              {% if user_item.profile_image %}
+                <img
+                  src="{{ user_item.profile_image.url }}"
+                  alt="{{ user_item.username }}"
+                  class="rounded-circle border"
+                  style="width:48px; height:48px; object-fit:cover;"
+                >
+              {% else %}
+                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold" style="width:48px; height:48px;">
+                  {{ user_item.username|first|upper }}
+                </div>
+              {% endif %}
+
+              <div>
+                <div class="fw-semibold">{{ user_item.username }}</div>
+                <div class="small text-muted">{{ user_item.email }}</div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
