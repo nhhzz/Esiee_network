@@ -70,7 +70,7 @@
       <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
         <span class="ev-chip"><i class="bi bi-calendar-event"></i> &Eacute;v&eacute;nement</span>
         {% if event.location %}
-          <span class="ev-chip"><i class="bi bi-geo-alt"></i> {{ event.get_location_display }}</span>
+          <span class="ev-chip"><i class="bi bi-geo-alt"></i> {{ event.location.name }}</span>
         {% endif %}
       </div>
 
@@ -124,7 +124,7 @@
             <span><i class="bi bi-hourglass-split"></i> Fin : {{ event.end_at|date:"d/m/Y H:i" }}</span>
           {% endif %}
           {% if event.location %}
-            <span><i class="bi bi-geo-alt"></i> Lieu : {{ event.get_location_display }}</span>
+            <span><i class="bi bi-geo-alt"></i> Lieu : {{ event.location.name }}</span>
           {% endif %}
         </div>
       </div>

@@ -1,37 +1,39 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 
-# Lieux possibles (points de la carte)
-LOCATION_CHOICES = [
-    ("DEJEUNERS", "Déjeuners"),
-    ("RESTAURANT", "Restaurant"),
-    ("CAFETERIA", "Cafétéria"),
-    ("GYMNASE", "Gymnase"),
-    ("AMPHI_DASSAULT", "Amphithéâtre M. Dassault"),
-    ("EPI5", "Epi 5"),
-    ("AMPHI", "Amphi"),
-    ("ACCUEIL", "Accueil"),
-    ("EPI2", "Epi 2"),
-    ("BIBLIOTHEQUE", "Bibliothèque"),
-    ("POSTE_NORD", "Poste Nord"),
-    ("PORTE_NORD", "Porte Nord"),
-    ("ROND_POINT", "Rond-Point"),
-    ("PORTE_PRINCIPALE", "Porte principale"),
-    ("EXPOSES", "Exposés"),
-]
+class Location(models.Model):
+    name = models.CharField(max_length=80, unique=True)
+    slug = models.SlugField(max_length=80, unique=True)
+    x_percent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
+    y_percent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
 
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
-    # Champ lieu -> dropdown avec les choix ci-dessus
-    location = models.CharField(
-        "Lieu",
-        max_length=50,
-        choices=LOCATION_CHOICES,
+    location = models.ForeignKey(
+        Location,
+        on_delete=models.PROTECT,
+        related_name="events",
+        verbose_name="Lieu",
     )
 
     start_at = models.DateTimeField()
@@ -54,4 +56,5 @@ class Event(models.Model):
 
     @property
     def is_past(self):
-        return self.start_at < timezone.now()
+        effective_end = self.end_at or self.start_at
+        return effective_end < timezone.now()

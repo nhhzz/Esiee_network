@@ -166,7 +166,7 @@
                 </a>
                 <div class="d-flex flex-wrap gap-2 text-muted small">
                   <span><i class="bi bi-clock"></i> {{ event.start_at|date:"d/m/Y H:i" }}</span>
-                  <span><i class="bi bi-geo-alt"></i> {{ event.get_location_display }}</span>
+                  <span><i class="bi bi-geo-alt"></i> {{ event.location.name }}</span>
                 </div>
                 <div class="ev-creator d-flex align-items-center gap-2 mt-2">
                   {% if event.created_by.profile_image %}

@@ -1,8 +1,41 @@
 from django import forms
+from django.db.models import Case, IntegerField, Value, When
+
 from .models import Event
 
 
 class EventForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        location_order = [
+            "epi-1",
+            "epi-2",
+            "epi-3",
+            "epi-4",
+            "epi-5",
+            "epi-6",
+            "amphi-1",
+            "amphi-2",
+            "amphi-3",
+            "amphi-4",
+            "accueil",
+            "bibliotheque",
+            "restaurant-crous",
+            "cafeteria",
+            "gymnase",
+        ]
+        ordering_case = Case(
+            *[
+                When(slug=slug, then=Value(index))
+                for index, slug in enumerate(location_order)
+            ],
+            default=Value(999),
+            output_field=IntegerField(),
+        )
+        self.fields["location"].queryset = (
+            self.fields["location"].queryset.annotate(_sort_key=ordering_case).order_by("_sort_key", "name")
+        )
+
     class Meta:
         model = Event
         fields = ["title", "description", "location", "start_at", "end_at"]
