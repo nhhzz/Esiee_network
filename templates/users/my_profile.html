@@ -1,105 +1,103 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container py-4" style="max-width: 1000px;">
+<div class="container py-4 py-lg-5" style="max-width: 1100px;">
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="text-light p-4 p-md-5" style="background: linear-gradient(110deg, #0f193b 0%, #182d57 55%, #223f72 100%);">
+      <div class="d-flex flex-column flex-lg-row gap-3 gap-lg-4 justify-content-between align-items-lg-center">
+        <div class="d-flex align-items-center gap-3">
+          {% if user_obj.profile_image %}
+            <img
+              src="{{ user_obj.profile_image.url }}"
+              alt="Photo de profil"
+              class="rounded-circle border border-2 border-light-subtle"
+              style="width: 84px; height: 84px; object-fit: cover;"
+            >
+          {% else %}
+            <div
+              class="rounded-circle bg-secondary-subtle text-dark d-flex align-items-center justify-content-center fw-bold"
+              style="width: 84px; height: 84px; font-size: 1.5rem;"
+            >
+              {{ user_obj.username|first|upper }}
+            </div>
+          {% endif %}
 
-  <!-- Header du profil -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-
-    <div class="d-flex align-items-center gap-3">
-      {% if user_obj.profile_image %}
-        <img src="{{ user_obj.profile_image.url }}"
-             alt="Photo de profil"
-             class="rounded-circle"
-             style="width:72px; height:72px; object-fit:cover;">
-      {% else %}
-        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-             style="width:72px; height:72px;">
-          {{ user_obj.username|first|upper }}
+          <div>
+            {% if is_self %}
+              <h1 class="h2 mb-1">Mon profil</h1>
+            {% else %}
+              <h1 class="h2 mb-1">Profil de {{ user_obj.username }}</h1>
+            {% endif %}
+            <p class="mb-2 opacity-75">{{ user_obj.username }} &mdash; {{ user_obj.email }}</p>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge text-bg-light">{{ user_obj.followers.count }} abonn&eacute;s</span>
+              <span class="badge text-bg-light">{{ user_obj.following.count }} abonnements</span>
+            </div>
+          </div>
         </div>
-      {% endif %}
 
-      <div>
-        {% if is_self %}
-          <h1 class="mb-1">Mon profil</h1>
-        {% else %}
-          <h1 class="mb-1">Profil de {{ user_obj.username }}</h1>
-        {% endif %}
-        <p class="text-muted mb-0">
-          {{ user_obj.username }} — {{ user_obj.email }}
-        </p>
-      </div>
-      <p class="text-muted small mb-0">
-        <strong>{{ user_obj.followers.count }}</strong> Abonnés ·
-        <strong>{{ user_obj.following.count }}</strong> Abonnements
-      </p>
-    </div>
+        <div class="d-flex flex-wrap gap-2">
+          {% if is_self %}
+            <a href="{% url 'users:profile' %}" class="btn btn-warning fw-semibold">
+              <i class="bi bi-pencil-square me-1"></i>
+              Modifier le profil
+            </a>
+          {% else %}
+            {% if is_following %}
+              <a href="{% url 'users:unfollow_user' user_obj.username %}" class="btn btn-outline-light">
+                <i class="bi bi-person-dash me-1"></i>
+                Se d&eacute;sabonner
+              </a>
+            {% else %}
+              <a href="{% url 'users:follow_user' user_obj.username %}" class="btn btn-light text-primary fw-semibold">
+                <i class="bi bi-person-plus me-1"></i>
+                Suivre
+              </a>
+            {% endif %}
 
-    {% if is_self %}
-      <a href="{% url 'users:profile' %}" class="btn btn-outline-primary btn-sm">
-        Modifier le profil
-      </a>
-    {% else %}
-    <div class="d-flex gap-2">
-      {% if is_following %}
-      <a href="{% url 'users:unfollow_user' user_obj.username %}"
-         class="btn btn-outline-secondary btn-sm">
-        Se désabonner
-      </a>
-      {% else %}
-      <a href="{% url 'users:follow_user' user_obj.username %}"
-         class="btn btn-primary btn-sm">
-        Suivre
-      </a>
-      {% endif %}
-
-      <button class="btn btn-outline-primary btn-sm"
+            <button
+              class="btn btn-outline-light"
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#dm-panel"
               aria-expanded="false"
-              aria-controls="dm-panel">
-        Envoyer un message
-      </button>
+              aria-controls="dm-panel"
+            >
+              <i class="bi bi-chat-dots me-1"></i>
+              Envoyer un message
+            </button>
+          {% endif %}
+        </div>
+      </div>
     </div>
-    {% endif %}
   </div>
 
   {% if not is_self %}
-    <!-- Panneau messagerie -->
     <div class="collapse mb-4" id="dm-panel">
-      <div class="card">
-        <div class="card-body" style="max-height: 320px; overflow-y: auto;">
-          <h5 class="card-title mb-3">Conversation avec {{ user_obj.username }}</h5>
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-3">Conversation avec {{ user_obj.username }}</h2>
 
-          <div class="mb-3">
+          <div class="border rounded-3 p-3 mb-3 bg-body-tertiary" style="max-height: 320px; overflow-y: auto;">
             {% if dm_messages %}
               {% for msg in dm_messages %}
-                <div class="mb-2 d-flex {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
-                  <div>
-                    <div class="small text-muted mb-1">
+                <div class="mb-3 d-flex {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                  <div style="max-width: 80%;">
+                    <div class="small text-muted mb-1 {% if msg.sender == request.user %}text-end{% endif %}">
                       {% if msg.sender == request.user %}
-                        Vous — {{ msg.created_at|date:"d/m/Y H:i" }}
+                        Vous &mdash; {{ msg.created_at|date:"d/m/Y H:i" }}
                       {% else %}
-                        {{ msg.sender.username }} — {{ msg.created_at|date:"d/m/Y H:i" }}
+                        {{ msg.sender.username }} &mdash; {{ msg.created_at|date:"d/m/Y H:i" }}
                       {% endif %}
                     </div>
-                    <div class="p-2 rounded
-                                {% if msg.sender == request.user %}
-                                  bg-primary text-white
-                                {% else %}
-                                  bg-light
-                                {% endif %}"
-                         style="max-width: 280px; white-space: pre-wrap;">
+                    <div class="p-2 px-3 rounded-3 {% if msg.sender == request.user %}bg-primary text-white{% else %}bg-white border{% endif %}" style="white-space: pre-wrap;">
                       {{ msg.content }}
                     </div>
                   </div>
                 </div>
               {% endfor %}
             {% else %}
-              <p class="text-muted mb-0">
-                Aucun message pour l'instant. Commencez la conversation !
-              </p>
+              <p class="text-muted mb-0">Aucun message pour l'instant. Commencez la conversation.</p>
             {% endif %}
           </div>
 
@@ -108,7 +106,8 @@
             <div class="mb-2">
               {{ dm_form.content }}
             </div>
-            <button type="submit" class="btn btn-sm btn-primary">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-send me-1"></i>
               Envoyer
             </button>
           </form>
@@ -118,82 +117,74 @@
   {% endif %}
 
   <div class="row g-4">
+    <div class="col-lg-6 d-flex">
+      <div class="card border-0 shadow-sm rounded-4 w-100">
+        <div class="card-body p-4">
+          <h2 class="h4 mb-3">
+            <i class="bi bi-megaphone me-2 text-primary"></i>
+            {% if is_self %}Mes publications{% else %}Publications de {{ user_obj.username }}{% endif %}
+          </h2>
 
-    <!-- Colonne gauche : Posts -->
-    <div class="col-md-6">
-      {% if is_self %}
-        <h4 class="mb-3">Mes publications</h4>
-      {% else %}
-        <h4 class="mb-3">Publications de {{ user_obj.username }}</h4>
-      {% endif %}
-
-      {% if posts %}
-        <div class="list-group">
-          {% for post in posts %}
-            <div class="list-group-item">
-              <div class="fw-semibold">
-                {{ post.title }}
-              </div>
-              <div class="small text-muted">
-                {{ post.get_post_type_display }} — {{ post.created_at|date:"d/m/Y H:i" }}
-              </div>
-
-              <p class="mb-2 mt-2">
-                {{ post.content|truncatechars:120 }}
-              </p>
-
-              <div class="d-flex align-items-center gap-3 small text-muted">
-                <span>❤️ {{ post.total_likes }}</span>
-                <span>💬 {{ post.comments.count }}</span>
-              </div>
+          {% if posts %}
+            <div class="list-group list-group-flush">
+              {% for post in posts %}
+                <div class="list-group-item px-0 py-3">
+                  <div class="fw-semibold">{{ post.title }}</div>
+                  <div class="small text-muted">{{ post.get_post_type_display }} &mdash; {{ post.created_at|date:"d/m/Y H:i" }}</div>
+                  <p class="mb-2 mt-2">{{ post.content|truncatechars:120 }}</p>
+                  <div class="d-flex align-items-center gap-3 small text-muted">
+                    <span><i class="bi bi-heart me-1"></i>{{ post.total_likes }}</span>
+                    <span><i class="bi bi-chat-left-text me-1"></i>{{ post.comments.count }}</span>
+                  </div>
+                </div>
+              {% endfor %}
             </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="text-muted">
-          {% if is_self %}
-            Tu n'as pas encore publié de post.
           {% else %}
-            {{ user_obj.username }} n'a pas encore publié de post.
+            <p class="text-muted mb-0">
+              {% if is_self %}
+                Tu n'as pas encore publi&eacute; de post.
+              {% else %}
+                {{ user_obj.username }} n'a pas encore publi&eacute; de post.
+              {% endif %}
+            </p>
           {% endif %}
-        </p>
-      {% endif %}
+        </div>
+      </div>
     </div>
 
-    <!-- Colonne droite : Événements -->
-    <div class="col-md-6">
-      {% if is_self %}
-        <h4 class="mb-3">Mes événements</h4>
-      {% else %}
-        <h4 class="mb-3">Événements de {{ user_obj.username }}</h4>
-      {% endif %}
+    <div class="col-lg-6 d-flex">
+      <div class="card border-0 shadow-sm rounded-4 w-100">
+        <div class="card-body p-4">
+          <h2 class="h4 mb-3">
+            <i class="bi bi-calendar-event me-2 text-primary"></i>
+            {% if is_self %}Mes &eacute;v&eacute;nements{% else %}&Eacute;v&eacute;nements de {{ user_obj.username }}{% endif %}
+          </h2>
 
-      {% if events %}
-        <div class="list-group">
-          {% for event in events %}
-            <a href="{% url 'events:detail' event.pk %}"
-               class="list-group-item list-group-item-action">
-              <div class="fw-semibold">
-                {{ event.title }}
-              </div>
-              <div class="small text-muted">
-                📍 {{ event.get_location_display }}
-                — 🕒 {{ event.start_at|date:"d/m/Y H:i" }}
-              </div>
-            </a>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="text-muted">
-          {% if is_self %}
-            Tu n'as pas encore créé d'événement.
+          {% if events %}
+            <div class="list-group list-group-flush">
+              {% for event in events %}
+                <a href="{% url 'events:detail' event.pk %}" class="list-group-item list-group-item-action px-0 py-3">
+                  <div class="fw-semibold">{{ event.title }}</div>
+                  <div class="small text-muted">
+                    <i class="bi bi-geo-alt me-1"></i>{{ event.get_location_display }}
+                    <span class="mx-1">&mdash;</span>
+                    <i class="bi bi-clock me-1"></i>{{ event.start_at|date:"d/m/Y H:i" }}
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
           {% else %}
-            {{ user_obj.username }} n'a pas encore créé d'événement.
+            <p class="text-muted mb-0">
+              {% if is_self %}
+                Tu n'as pas encore cr&eacute;&eacute; d'&eacute;v&eacute;nement.
+              {% else %}
+                {{ user_obj.username }} n'a pas encore cr&eacute;&eacute; d'&eacute;v&eacute;nement.
+              {% endif %}
+            </p>
           {% endif %}
-        </p>
-      {% endif %}
+        </div>
+      </div>
     </div>
-
   </div>
 </div>
 

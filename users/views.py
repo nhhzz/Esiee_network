@@ -1,8 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.db.models import Q, Count
+from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from .forms import ProfileForm, SignupForm, LoginForm, DirectMessageForm
 from posts.models import Post
@@ -10,6 +16,25 @@ from .models import DirectMessage, Follow, User
 from events.models import Event
 
 User = get_user_model()
+
+
+def _send_verification_email(request, user):
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+    token = default_token_generator.make_token(user)
+    verify_url = request.build_absolute_uri(
+        reverse("users:verify_email", kwargs={"uidb64": uidb64, "token": token})
+    )
+
+    subject = "Confirme ton inscription ESIEE Network"
+    message = (
+        f"Bonjour {user.username},\n\n"
+        "Merci pour ton inscription sur ESIEE Network.\n"
+        "Clique sur le lien ci-dessous pour verifier ton adresse email :\n\n"
+        f"{verify_url}\n\n"
+        "Si tu n'es pas a l'origine de cette inscription, ignore cet email."
+    )
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@esiee-network.local")
+    send_mail(subject, message, from_email, [user.email], fail_silently=False)
 
 
 def home(request):
@@ -22,24 +47,70 @@ def signup(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.email = form.cleaned_data['email']
+            user.is_active = False
             user.save()
-            login(request, user)
-            messages.success(request, "Bienvenue ! Votre compte a ete cree.")
-            return redirect('users:profile')
+            try:
+                _send_verification_email(request, user)
+                messages.success(
+                    request,
+                    "Compte cree. Un email de verification a ete envoye. "
+                    "Confirme ton adresse avant de te connecter.",
+                )
+            except Exception:
+                messages.error(
+                    request,
+                    "Compte cree, mais l'email de verification n'a pas pu etre envoye. "
+                    "Contacte l'administrateur.",
+                )
+            return redirect('users:login')
         messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
     else:
         form = SignupForm()
     return render(request, 'users/signup.html', {'form': form})
 
 
+def verify_email(request, uidb64, token):
+    user = None
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        if not user.is_active:
+            user.is_active = True
+            user.save(update_fields=["is_active"])
+            messages.success(request, "Adresse email verifiee. Tu peux maintenant te connecter.")
+        else:
+            messages.info(request, "Ce compte est deja verifie.")
+    else:
+        messages.error(request, "Lien de verification invalide ou expire.")
+
+    return redirect("users:login")
+
+
 def user_login(request):
     if request.method == 'POST':
+        username = request.POST.get("username", "").strip()
+        if username:
+            inactive_user = User.objects.filter(
+                username__iexact=username,
+                is_active=False,
+            ).first()
+            if inactive_user:
+                messages.warning(
+                    request,
+                    "Compte non active. Verifie d'abord ton adresse email via le lien recu.",
+                )
+                return render(request, 'users/login.html', {'form': LoginForm(request, data=request.POST)})
+
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             messages.success(request, "Connexion reussie.")
-            return redirect('users:profile')
+            return redirect('users:home')
         messages.error(request, "Identifiants invalides.")
     else:
         form = LoginForm()

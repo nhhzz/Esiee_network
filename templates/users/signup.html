@@ -1,33 +1,87 @@
 {% extends 'base.html' %}
 {% load form_extras %}
 {% block content %}
-<div class="container" style="max-width:560px;">
-  <div class="card shadow-sm mt-5">
-    <div class="card-body p-4">
-      <h3 class="mb-2">Créer un compte ESIEE</h3>
-      <p class="text-muted mb-4">Adresse requise: <code>@edu.esiee.fr</code></p>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<div class="container py-4 py-md-5" style="max-width: 760px;">
+  <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+    <div class="text-light p-4 p-md-5" style="background: linear-gradient(110deg, #0f193b 0%, #182d57 55%, #223f72 100%);">
+      <h1 class="h2 fw-bold mb-2">
+        <i class="bi bi-person-plus-fill me-2"></i>
+        Cr&eacute;er un compte ESIEE
+      </h1>
+      <p class="mb-0 text-light opacity-75">
+        Rejoins la plateforme en utilisant ton adresse institutionnelle.
+      </p>
+    </div>
+
+    <div class="card-body p-4 p-md-5">
+      <div class="alert alert-primary d-flex align-items-center mb-4" role="alert">
+        <i class="bi bi-shield-check me-2"></i>
+        Adresse requise : <code class="ms-2">@edu.esiee.fr</code>
+      </div>
+      <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+        <i class="bi bi-envelope-check me-2"></i>
+        Un e-mail de v&eacute;rification te sera envoy&eacute; apr&egrave;s l'inscription.
+      </div>
+
       <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.non_field_errors }}
-        <div class="mb-3">
-          <label class="form-label">Nom d’utilisateur</label>
-          {{ form.username|add_class:"form-control" }}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold">Nom d'utilisateur</label>
+            {{ form.username|add_class:"form-control form-control-lg" }}
+            {% if form.username.errors %}
+              <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Email ESIEE</label>
+            {{ form.email|add_class:"form-control form-control-lg" }}
+            <div class="form-text">Ex : prenom.nom@edu.esiee.fr</div>
+            {% if form.email.errors %}
+              <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Mot de passe</label>
+            {{ form.password1|add_class:"form-control form-control-lg" }}
+            {% if form.password1.errors %}
+              <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Confirmation du mot de passe</label>
+            {{ form.password2|add_class:"form-control form-control-lg" }}
+            {% if form.password2.errors %}
+              <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+            {% endif %}
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Email ESIEE</label>
-          {{ form.email|add_class:"form-control" }}
-          <div class="form-text">Ex: prenom.nom@edu.esiee.fr</div>
+
+        <div class="d-grid mt-4">
+          <button class="btn btn-primary btn-lg">
+            <i class="bi bi-check2-circle me-1"></i>
+            Cr&eacute;er mon compte
+          </button>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Mot de passe</label>
-          {{ form.password1|add_class:"form-control" }}
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Confirmation du mot de passe</label>
-          {{ form.password2|add_class:"form-control" }}
-        </div>
-        <button class="btn btn-primary w-100">Créer mon compte</button>
       </form>
+
+      <hr class="my-4">
+      <p class="text-muted mb-0 text-center">
+        D&eacute;j&agrave; inscrit ?
+        <a href="{% url 'users:login' %}" class="fw-semibold text-decoration-none">Se connecter</a>
+      </p>
     </div>
   </div>
 </div>
