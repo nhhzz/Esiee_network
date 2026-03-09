@@ -23,7 +23,10 @@
         <div class="collapse navbar-collapse" id="nav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-lg-1">
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-1 px-lg-2" href="/map/">
+              <a
+                class="nav-link d-flex align-items-center gap-1 px-lg-2"
+                href="{% if user.is_authenticated %}{% url 'maps:index' %}{% else %}{% url 'users:login' %}?next={% url 'maps:index' %}{% endif %}"
+              >
                 <i class="bi bi-geo-alt"></i> Carte
               </a>
             </li>

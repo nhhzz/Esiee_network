@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block content %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -50,17 +51,6 @@
     display: block;
   }
 
-  .location-dot {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(37, 99, 235, 0.9);
-    border: 1px solid #fff;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
-  }
-
   .event-marker-wrap {
     position: absolute;
     transform: translate(-50%, -80%);
@@ -102,12 +92,28 @@
     animation-duration: 0.9s;
   }
 
+  .event-count {
+    position: absolute;
+    top: -7px;
+    right: -10px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    font-size: 11px;
+    line-height: 18px;
+    font-weight: 700;
+    background: #ef4444;
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.3);
+  }
+
   .event-popup {
     position: absolute;
     left: 50%;
     bottom: calc(100% + 10px);
     transform: translateX(-50%);
-    width: 220px;
+    width: 240px;
     background: rgba(15, 25, 59, 0.95);
     color: #e2e8f0;
     border-radius: 10px;
@@ -203,7 +209,7 @@
       <div class="col-lg-8">
         <h1 class="mb-2">Carte ESIEE</h1>
         <p class="mb-0 text-light opacity-75">
-          Les marqueurs 📍 affichent les &eacute;v&eacute;nements &agrave; venir et en cours sur le campus.
+          Les marqueurs &#128205; affichent les &eacute;v&eacute;nements &agrave; venir et en cours sur le campus.
         </p>
       </div>
       <div class="col-lg-4 text-lg-end">
@@ -218,49 +224,49 @@
     <div class="map-container mx-auto">
       <img src="{% static 'img/esiee_plan.jpg' %}" alt="Plan ESIEE" class="img-fluid map-image">
 
-      {% for location in locations %}
-        <a
-          href="{% url 'events:list' %}?location={{ location.slug }}"
-          class="location-dot"
-          style="left: clamp(2%, {{ location.x_percent }}%, 98%); top: clamp(2%, {{ location.y_percent }}%, 98%);"
-          title="{{ location.name }}"
-          aria-label="{{ location.name }}"
-        ></a>
-      {% endfor %}
-
       {% for marker in event_markers %}
         <div
           class="event-marker-wrap {{ marker.state }}"
-          style="left: {{ marker.location.x_percent }}%; top: {{ marker.location.y_percent }}%;"
+          style="left: {{ marker.location.x_percent|unlocalize }}%; top: {{ marker.location.y_percent|unlocalize }}%;"
         >
-          <button type="button" class="event-marker" aria-label="{{ marker.event.title }}">
-            📍
+          <button type="button" class="event-marker" aria-label="{{ marker.location.name }}">
+            &#128205;
           </button>
+          {% if marker.events|length > 1 %}
+            <span class="event-count">{{ marker.events|length }}</span>
+          {% endif %}
 
           <div class="event-popup {{ marker.popup_side }} {{ marker.popup_vertical }}">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <strong class="small">{{ marker.event.title }}</strong>
+              <strong class="small">{{ marker.location.name }}</strong>
               <span class="badge rounded-pill">{{ marker.state|title }}</span>
             </div>
             <div class="small mb-1"><i class="bi bi-geo-alt"></i> {{ marker.location.name }}</div>
-            <div class="small mb-2">
-              <i class="bi bi-clock"></i>
-              {{ marker.event.start_at|date:"H:i" }}
-              {% if marker.event.end_at %}
-                - {{ marker.event.end_at|date:"H:i" }}
-              {% endif %}
+            <div class="d-flex flex-column gap-2">
+              {% for event in marker.events %}
+                <div class="border rounded p-2 bg-dark bg-opacity-25">
+                  <div class="small fw-semibold">{{ event.title }}</div>
+                  <div class="small mb-2">
+                    <i class="bi bi-clock"></i>
+                    {{ event.start_at|date:"H:i" }}
+                    {% if event.end_at %}
+                      - {{ event.end_at|date:"H:i" }}
+                    {% endif %}
+                  </div>
+                  <a href="{% url 'events:detail' event.pk %}" class="btn btn-sm btn-light w-100">
+                    Voir l'&eacute;v&eacute;nement
+                  </a>
+                </div>
+              {% endfor %}
             </div>
-            <a href="{% url 'events:detail' marker.event.pk %}" class="btn btn-sm btn-light w-100">
-              Voir l'&eacute;v&eacute;nement
-            </a>
           </div>
         </div>
       {% endfor %}
     </div>
 
     <div class="map-legend">
-      <span class="legend-chip"><span class="location-dot" style="position: static; transform: none;"></span> Position de lieu</span>
-      <span class="legend-chip">📍 &Eacute;v&eacute;nement en cours / &agrave; venir</span>
+      <span class="legend-chip">&#128205; &Eacute;v&eacute;nement en cours / &agrave; venir</span>
+      <span class="legend-chip"><span class="event-count" style="position: static;">2</span> Plusieurs &eacute;v&eacute;nements</span>
       <span class="text-muted small align-self-center">Les marqueurs disparaissent automatiquement apr&egrave;s la fin d'un &eacute;v&eacute;nement.</span>
     </div>
 
